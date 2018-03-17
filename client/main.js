@@ -1,14 +1,15 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import $ from 'jquery';
 import './main.html';
 
 Shapes = new Mongo.Collection('shapes');
 
 Shapes.schema = new SimpleSchema({
   name: {type: String},
-  events : {type: [Object], optional: true},
-  userId: {type: String, regEx: SimpleSchema.RegEx.Id, optional: true}
+  events : {type: [Object]},
 });
+
 
 FlowRouter.route('/', {
   name: 'Main',
@@ -27,27 +28,19 @@ FlowRouter.route('/color/:color', {
 
 
 Template.hello.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
-});
+  this.autorun(() => {
+    console.log('autorunning...');
+    this.subscribe('shapes.all');
+  });
 
-Template.hello.helpers({
-  counter() {
-    return Template.instance().counter.get();
-  },
-});
-
-Template.hello.events({
-  'click button'(event, instance) {
-    // increment the counter when button is clicked
-    instance.counter.set(instance.counter.get() + 1);
-  },
-});
-
-
-Template.Color_page.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
+  this.autorun(() => {
+    Shapes.find({}).observe({
+      added: function(item){
+        console.log('new shape added...');
+        console.log(item);
+      }
+    });
+  });
 });
 
 Template.Color_page.helpers({
@@ -56,14 +49,28 @@ Template.Color_page.helpers({
   },
 });
 
+
+Template.Color_page.onRendered(function helloOnRendererd() {
+  $('body').on('click', (e) => {
+    e.preventDefault()
+    console.log('click detected, inserting shape...');
+    console.log(e);
+    Shapes.insert({
+      color: FlowRouter.getParam('color'),
+      events: [{ 
+        x: e.pageX,
+        y: e.pageY,
+      }]
+    });
+    return false;
+  })
+});
+
+// Meteor style event : not working atm
 Template.Color_page.events({
   'click body'(event, instance) {
-    // increment the counter when button is clicked
-    // instance.counter.set(instance.counter.get() + 1);
     console.log('click body');
     console.log(event);
-    Shapes.insert({
-      color: FlowRouter.getParam('color')
-    });
+
   },
 });

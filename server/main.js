@@ -5,9 +5,13 @@ Shapes = new Mongo.Collection('shapes');
 
 Shapes.schema = new SimpleSchema({
   color: {type: String},
-  events : {type: [Object], optional: true},
-  userId: {type: String, regEx: SimpleSchema.RegEx.Id, optional: true}
+  events: {type: [Object]}
 });
+
+
+Meteor.publish('shapes.all', function () { 
+  return Shapes.find({});
+})
 
 Meteor.startup(() => {
   // code to run on server at startup
