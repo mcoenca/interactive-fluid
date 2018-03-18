@@ -2,6 +2,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import $ from 'jquery';
+import _ from 'underscore';
 
 // Related dependencies
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,8 +15,7 @@ import './color.html';
 // Libs
 import { initGL, onClick  } from '/imports/FluidApp.js';
 const fluidSendClick = onClick;
-import { initAudio, simpleSendClick } from '/imports/AudioApp.js';
-const audioSendClick = simpleSendClick;
+import { initAudio, createUser } from '/imports/AudioApp.js';
 
 Shapes = new Mongo.Collection('shapes');
 
@@ -32,6 +32,17 @@ FlowRouter.route('/', {
   }
 });
 
+const colors = [{
+  color: 'red',
+  sample: 1
+}, {
+  color: 'green',
+  sample: 2
+}, {
+  color: 'blue',
+  sample: 3
+}];
+
 FlowRouter.route('/color/:color', {
   name: 'Color',
   action(params, queryParams) {
@@ -43,6 +54,7 @@ FlowRouter.route('/color/:color', {
 // === FLUID PAGE
 
 Template.fluid.onCreated(function fluidOnCreated() {
+  this.usersLoaded = []; 
 
   const drawCircle = (shape) => {
     const {x, y} = shape.events[0];
@@ -54,15 +66,23 @@ Template.fluid.onCreated(function fluidOnCreated() {
       clientY: y,
     };
 
-    fluidSendClick(fluidEvent)
+    fluidSendClick(fluidEvent);
+  };
+
+  const playSound = (shape) => {
+    const goodUser = _.find(this.loadedUsers, ({color}) => color === shape.color);
+
+    if(!goodUser) return;
+
+    const {x, y} = shape.events[0];
 
     const audioEvent = {
       clientX: x,
       clientY: y,
     };
 
-    audioSendClick(audioEvent);
-  };
+    goodUser.sendClick(audioEvent)
+  }
 
   this.autorun(() => {
     console.log('autorunning...');
@@ -72,9 +92,9 @@ Template.fluid.onCreated(function fluidOnCreated() {
   this.autorun(() => {
     Shapes.find({}).observe({
       added: (shape) => {
-        console.log('new shape added...');
-        console.log(shape);
+        console.log(`New ${shape.color} shape`);
         drawCircle(shape);
+        playSound(shape);
       }
     });
   });
@@ -83,6 +103,12 @@ Template.fluid.onCreated(function fluidOnCreated() {
 Template.fluid.onRendered(function fluidOnRendered() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   initAudio(AudioContext, 'sounds');
+
+  const loadUser = (color) => (_.extend({color: color.color}, createUser(color.sample)));
+
+  this.loadedUsers = colors.map(loadUser);
+
+  console.log(this.loadedUsers);
 
   this.fluidCanvas = initGL({
     canvasGlId: 'glcanvas', 
