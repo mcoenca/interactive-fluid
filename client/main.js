@@ -12,10 +12,15 @@ import './main.css';
 import './main.html';
 import './color.html';
 
+import {perc2color} from '/imports/utils.js';
+
 // Libs
 import { initGL, onClick  } from '/imports/FluidApp.js';
 const fluidSendClick = onClick;
+
 import { initAudio, createUser } from '/imports/AudioApp.js';
+
+import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.js';
 
 Shapes = new Mongo.Collection('shapes');
 
@@ -55,6 +60,7 @@ FlowRouter.route('/color/:color', {
 
 Template.fluid.onCreated(function fluidOnCreated() {
   this.usersLoaded = []; 
+  this.backgroundColor = new ReactiveVar('#00ffed');
 
   const drawCircle = (shape) => {
     const {x, y} = shape.events[0];
@@ -114,7 +120,23 @@ Template.fluid.onRendered(function fluidOnRendered() {
     canvasGlId: 'glcanvas', 
     canvas2dId: '2dcanvas'
   });
+
+  const onNoteHook = (note) => {
+    const {note : {name, number, octave}} = note;
+    const totalNotes = 120;
+
+    this.backgroundColor.set(perc2color(100 * number / totalNotes));
+  };
+
+  setKeyStationNoteHook(onNoteHook);
+  initUsbKeyStationMidi();
 });
+
+Template.fluid.helpers({
+  'backgroundColor'() {
+    return Template.instance().backgroundColor.get();
+  },
+})
 
 // === COLOR PAGE
 

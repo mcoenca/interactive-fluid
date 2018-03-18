@@ -5,6 +5,13 @@
 
 
 <template name="fluid">
-  <canvas id="2dcanvas"></canvas>
-  <canvas id="glcanvas"></canvas>
+  <div style="background-color: {{backgroundColor}}">
+    <canvas id="2dcanvas"></canvas>
+    <canvas id="glcanvas"></canvas>
+    <p>
+      ___
+      <br/>
+      ___ La couleur de fond (background color) de ce bloc est calculée a partir de la hauteur de la node jouée sur le clavier en MIDI
+    </p>
+  </div>
 </template>
