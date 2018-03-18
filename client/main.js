@@ -12,7 +12,10 @@ import './main.html';
 import './color.html';
 
 // Libs
-import { initGL } from '/imports/FluidApp.js';
+import { initGL, onClick  } from '/imports/FluidApp.js';
+const fluidSendClick = onClick;
+import { initAudio, simpleSendClick } from '/imports/AudioApp.js';
+const audioSendClick = simpleSendClick;
 
 Shapes = new Mongo.Collection('shapes');
 
@@ -42,16 +45,23 @@ FlowRouter.route('/color/:color', {
 Template.fluid.onCreated(function fluidOnCreated() {
 
   const drawCircle = (shape) => {
-    debugger;
     const {x, y} = shape.events[0];
+
     if (!this.fluidCanvas) return;
 
-    const iEvent = {
+    const fluidEvent = {
       clientX: x,
       clientY: y,
     };
 
-    this.fluidCanvas.createCircle(iEvent)
+    fluidSendClick(fluidEvent)
+
+    const audioEvent = {
+      clientX: x,
+      clientY: y,
+    };
+
+    audioSendClick(audioEvent);
   };
 
   this.autorun(() => {
@@ -71,6 +81,9 @@ Template.fluid.onCreated(function fluidOnCreated() {
 });
 
 Template.fluid.onRendered(function fluidOnRendered() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  initAudio(AudioContext, 'sounds');
+
   this.fluidCanvas = initGL({
     canvasGlId: 'glcanvas', 
     canvas2dId: '2dcanvas'

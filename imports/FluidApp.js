@@ -170,7 +170,7 @@ const onTouchMove = function(e){
     gl.uniform2f(mouseCoordLocation, touch.pageX/width, touch.pageY/height);
 }
 
-const onClick = function(e)
+export const onClick = function(e)
 {
     canvas2D.onClick( e );
 }
@@ -210,8 +210,8 @@ export const initGL = function({canvasGlId, canvas2dId}) {
     canvas.ontouchend = onMouseOut;
     canvas.ontouchstart = onTouchMove;
 
+    // to reactivate on click behaviour
     // canvas.onclick = onClick;
-    canvas.createCircle = onClick;
 
     window.onresize = onResize;
 
@@ -319,4 +319,4 @@ export const initGL = function({canvasGlId, canvas2dId}) {
     return canvas;
 }
 
-export default { initGL };
+export default { initGL, onClick };
