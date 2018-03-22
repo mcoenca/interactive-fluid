@@ -15,8 +15,7 @@ import './color.html';
 import {perc2color} from '/imports/utils.js';
 
 // Libs
-import { initGL, onClick  } from '/imports/FluidApp.js';
-const fluidSendClick = onClick;
+import { initGL, onClick, handleEvents  } from '/imports/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
 
@@ -64,16 +63,10 @@ Template.fluid.onCreated(function fluidOnCreated() {
   this.backgroundColor = new ReactiveVar('#00ffed');
 
   const drawCircle = (shape) => {
-    const {x, y} = shape.events[0];
+      const { color } = shape;
+      const {x, y} = shape.events[0];
 
-    if (!this.fluidCanvas) return;
-
-    const fluidEvent = {
-      clientX: x,
-      clientY: y,
-    };
-
-    fluidSendClick(fluidEvent);
+      handleEvents( x, y, color );
   };
 
   const playSound = (shape) => {

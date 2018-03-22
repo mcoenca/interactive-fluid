@@ -396,7 +396,20 @@ function onTouchMove(e){
 
 export function onClick(e)
 {
+    if ( !canvas2D )
+    {
+        return;
+    }
     canvas2D.onClick( e );
+}
+
+export function handleEvents( iCenterX, iCenterY, iColor )
+{
+    if ( !canvas2D )
+    {
+        return;
+    }
+    canvas2D.addCircle( iCenterX, iCenterY, iColor );
 }
 
 function onMouseOut(){

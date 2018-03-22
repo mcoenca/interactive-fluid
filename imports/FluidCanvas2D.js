@@ -34,6 +34,15 @@ Canvas2D.prototype.resize = function( iWidth, iHeight )
     this.docElt.height = iHeight;
 };
 
+Canvas2D.prototype.addCircle = function ( iCenterX, iCenterY, iColor )
+{
+    var circle = new Circle();
+    circle.fillColor = iColor;
+    circle.center.x = iCenterX;
+    circle.center.y = iCenterY;
+    this.shapeA.push( circle );
+};
+
 //Methode appelée à chaque frame
 Canvas2D.prototype.draw = function()
 {
