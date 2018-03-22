@@ -34,6 +34,7 @@ FlowRouter.route('/', {
   name: 'Main',
   action(params, queryParams) {
     BlazeLayout.render('App_body', {main: 'Main_page'});
+    BlazeLayout.setRoot('body');
   }
 });
 
