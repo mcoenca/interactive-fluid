@@ -15,7 +15,7 @@ import './color.html';
 import {perc2color} from '/imports/utils.js';
 
 // Libs
-import { initGL, onClick, handleEvents  } from '/imports/FluidApp.js';
+import { initGL, handleEvents  } from '/imports/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
 
@@ -37,15 +37,26 @@ FlowRouter.route('/', {
   }
 });
 
-const colors = [{
+const colorInfos = [{
   color: 'red',
+  colorCode: 'red',
   sample: 1
 }, {
   color: 'green',
+  colorCode: 'green',
   sample: 2
 }, {
   color: 'blue',
+  colorCode: 'blue',
   sample: 3
+}, {
+  color: 'yellow',
+  colorCode: 'yellow',
+  sample: 4
+}, {
+  color: 'turquoise',
+  colorCode: '#39e1ff',
+  sample: 5
 }];
 
 FlowRouter.route('/color/:color', {
@@ -66,7 +77,10 @@ Template.fluid.onCreated(function fluidOnCreated() {
       const { color } = shape;
       const {x, y} = shape.events[0];
 
-      handleEvents( x, y, color );
+      const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+      
+
+      handleEvents( x, y, colorCode );
   };
 
   const playSound = (shape) => {
@@ -82,7 +96,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
     };
 
     goodUser.sendClick(audioEvent)
-  }
+  };
 
   this.autorun(() => {
     console.log('autorunning...');
@@ -106,7 +120,7 @@ Template.fluid.onRendered(function fluidOnRendered() {
 
   const loadUser = (color) => (_.extend({color: color.color}, createUser(color.sample)));
 
-  this.loadedUsers = colors.map(loadUser);
+  this.loadedUsers = colorInfos.map(loadUser);
 
   console.log(this.loadedUsers);
 
@@ -135,7 +149,7 @@ Template.fluid.helpers({
 // === COLOR PAGE
 
 Template.Color_page.onRendered(function helloOnRendererd() {
-  $('body').on('click', (e) => {
+  $('body').on('mousedown', (e) => {
     e.preventDefault()
     console.log('click detected, inserting shape...');
     console.log(e);
