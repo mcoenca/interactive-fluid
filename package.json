@@ -6,8 +6,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.36",
+    "ably": "^1.0.13",
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.1",
+    "jquery-touch-events": "^1.0.7",
     "meteor-node-stubs": "^0.3.2",
     "tone": "^0.11.11",
     "tunajs": "^1.0.0",

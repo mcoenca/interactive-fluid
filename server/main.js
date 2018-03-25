@@ -10,7 +10,7 @@ Shapes.schema = new SimpleSchema({
 
 
 Meteor.publish('shapes.all', function () { 
-  return Shapes.find({});
+  return Shapes.find({}, {_id: -1});
 })
 
 Meteor.startup(() => {

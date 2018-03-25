@@ -2,7 +2,14 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import $ from 'jquery';
+import loadTouchEvents from 'jquery-touch-events';
+loadTouchEvents($);
+
 import _ from 'underscore';
+
+import ably from 'ably'
+const realtime = new ably.Realtime('P6TapA.DpvyQg:xpEbBUNQPVRdd9Va');
+const channel = realtime.channels.get('shapes');
 
 // Related dependencies
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -75,7 +82,12 @@ Template.fluid.onCreated(function fluidOnCreated() {
 
   const drawCircle = (shape) => {
       const { color } = shape;
-      const {x, y} = shape.events[0];
+      const {xPc, yPc} = shape.events[0];
+      const width = $(window).width();
+      const height = $(window).height();
+
+      x = xPc * width;
+      y = yPc * height;
 
       const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
       
@@ -88,7 +100,10 @@ Template.fluid.onCreated(function fluidOnCreated() {
 
     if(!goodUser) return;
 
-    const {x, y} = shape.events[0];
+    const {xPc, yPc} = shape.events[0];
+
+    x = xPc * $(window).width();
+    y = yPc * $(window).height();
 
     const audioEvent = {
       clientX: x,
@@ -98,20 +113,28 @@ Template.fluid.onCreated(function fluidOnCreated() {
     goodUser.sendClick(audioEvent)
   };
 
-  this.autorun(() => {
-    console.log('autorunning...');
-    this.subscribe('shapes.all');
-  });
+  // this.autorun(() => {
+  //   console.log('autorunning...');
+  //   this.subscribe('shapes.all');
+  // });
 
-  this.autorun(() => {
-    Shapes.find({}).observe({
-      added: (shape) => {
-        console.log(`New ${shape.color} shape`);
-        drawCircle(shape);
-        playSound(shape);
-      }
-    });
-  });
+
+  // this.autorun(() => {
+  //   Shapes.find({}).observe({
+  //     added: (shape) => {
+  //       console.log(`New ${shape.color} shape`);
+  //       drawCircle(shape);
+  //       playSound(shape);
+  //     }
+  //   });
+  // });
+
+
+  channel.subscribe('shapes', ({data: shape}) => {
+    drawCircle(shape);
+    playSound(shape);
+  })
+  
 });
 
 Template.fluid.onRendered(function fluidOnRendered() {
@@ -149,17 +172,40 @@ Template.fluid.helpers({
 // === COLOR PAGE
 
 Template.Color_page.onRendered(function helloOnRendererd() {
-  $('body').on('mousedown', (e) => {
+  const color = FlowRouter.getParam('color');
+  const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+
+  // $('body').on('mousedown', (e) => {
+  $('body').on('tapstart', (e) => {
+    const width = $(window).width();
+    const height = $(window).height();
+
     e.preventDefault()
     console.log('click detected, inserting shape...');
     console.log(e);
-    Shapes.insert({
+
+    const eX = e.pageX;
+    const eY = e.pageY;
+
+    const circleDiv = $('<div class="good-circle">')
+      .css({
+          "left": eX - 5 + 'px',
+          "top": eY - 5 + 'px',
+          "background-color": colorCode
+      })
+      .appendTo(document.getElementById('color-page'));
+
+      setTimeout(() => circleDiv.remove(),5000);
+
+    const shape = {
       color: FlowRouter.getParam('color'),
       events: [{ 
-        x: e.pageX,
-        y: e.pageY,
+        xPc: eX / width,
+        yPc: eY / height,
       }]
-    });
+    };
+    channel.publish('shapes', shape)
+    // Shapes.insert(shape);
     return false;
   })
 });
