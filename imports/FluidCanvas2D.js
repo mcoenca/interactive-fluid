@@ -59,9 +59,9 @@ Canvas2D.prototype.draw = function()
         cShape.draw( context );
 
         //Ici on modifie le modele pour faire l'animation
-        if ( cShape.radius > 0 )
+        if ( cShape.radius > 10 )
         {
-            cShape.radius -= 0.5;
+            cShape.radius -= 10;
         }
         else
         {

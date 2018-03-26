@@ -298,7 +298,8 @@ function step(){
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture( gl.TEXTURE_2D, lastStateColorRed );
     gl.drawArrays(gl.TRIANGLES, 0, 6);//draw to framebuffer
-
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, lastState);
     //Green
     gl.bindFramebuffer( gl.FRAMEBUFFER, colorFrameBufferGreen );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, currentStateColorGreen, 0);
@@ -309,7 +310,8 @@ function step(){
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture( gl.TEXTURE_2D, lastStateColorGreen );
     gl.drawArrays(gl.TRIANGLES, 0, 6);//draw to framebuffer
-
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, lastState);
     //Blue
     gl.bindFramebuffer( gl.FRAMEBUFFER, colorFrameBufferBlue );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, currentStateColorBlue, 0);
@@ -320,7 +322,8 @@ function step(){
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture( gl.TEXTURE_2D, lastStateColorBlue );
     gl.drawArrays(gl.TRIANGLES, 0, 6);//draw to framebuffer
-
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, lastState);
 
     var temp = lastState;
     lastState = currentState;

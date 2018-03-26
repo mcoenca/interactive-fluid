@@ -73,7 +73,7 @@
                     float r = ( 49.0 * position + 56.0 ) / 255.0;
                     float g = ( 49.0 * position + 56.0 ) / 255.0;
                     float b = ( 49.0 * position + 56.0 ) / 255.0;
-                    gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.2 );
+                    gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
                 }
                 else
                 {
@@ -84,7 +84,7 @@
                     float r = ( 85.0 * position + 105.0 ) / 255.0;
                     float g = ( 85.0 * position + 105.0 ) / 255.0;
                     float b = ( 85.0 * position + 105.0 ) / 255.0;
-                    gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.2 );
+                    gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
                 }
 
                 return;
@@ -92,33 +92,33 @@
 
             float fTotal = 0.0;
 
-            if ( u_mouseEnable == 1.0 )
-            {
-                vec2 pxDistFromMouse = (v_texCoord - u_mouseCoord)*(v_texCoord - u_mouseCoord)/onePixel;
-                float tol = 0.005;
-                if (pxDistFromMouse.x < tol && pxDistFromMouse.y < tol)
-                {
-                    fTotal -= 10.0;//upward force from mouse
-                }
-            }
+//            if ( u_mouseEnable == 1.0 )
+//            {
+//                vec2 pxDistFromMouse = (v_texCoord - u_mouseCoord)*(v_texCoord - u_mouseCoord)/onePixel;
+//                float tol = 0.005;
+//                if (pxDistFromMouse.x < tol && pxDistFromMouse.y < tol)
+//                {
+//                    fTotal -= 10.0;//upward force from mouse
+//                }
+//            }
 
             float colorIdx = 1.0;
             if ( u_colorFlag == 0.0 && (canvas2DState.r >= 0.01 || canvas2DState.g >= 0.01 || canvas2DState.b >= 0.01) )
             {
-                gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+                gl_FragColor = currentState;
                 return;
             }
-            else if ( u_colorFlag == 1.0 && canvas2DState.r >= 0.01 )
+            else if ( u_colorFlag == 1.0 && (canvas2DState.r >= 0.01 || canvas2DState.g >= 0.01 || canvas2DState.b >= 0.01) )
             {
                 gl_FragColor = vec4(canvas2DState.r, 0.0,0.0, 1.0);
                 return;
             }
-            else if ( u_colorFlag == 2.0 && canvas2DState.g >= 0.01 )
+            else if ( u_colorFlag == 2.0 && (canvas2DState.r >= 0.01 || canvas2DState.g >= 0.01 || canvas2DState.b >= 0.01) )
             {
                 gl_FragColor = vec4(canvas2DState.g, 0.0,0.0, 1.0);
                 return;
             }
-            else if ( u_colorFlag == 3.0 && canvas2DState.b >= 0.01 )
+            else if ( u_colorFlag == 3.0 && (canvas2DState.r >= 0.01 || canvas2DState.g >= 0.01 || canvas2DState.b >= 0.01) )
             {
                 gl_FragColor = vec4(canvas2DState.b, 0.0,0.0, 1.0);
                 return;
@@ -137,6 +137,10 @@
                     {
                         neighborState = vec4(0.0,0.0,0.0,1.0);
                     }
+//                    else if ( neighborColor.r > 0.0 || neighborColor.g > 0.0 || neighborColor.b > 0.0 )
+//                    {
+//                        neighborState = vec4(0.0,0.0,0.0,1.0);
+//                    }
                     else
                     {
                         neighborState = texture2D(u_image, neighborCoord);
