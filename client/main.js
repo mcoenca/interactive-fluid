@@ -44,27 +44,57 @@ FlowRouter.route('/', {
   }
 });
 
-const colorInfos = [{
-  color: 'red',
-  colorCode: 'red',
-  sample: 1
-}, {
-  color: 'green',
-  colorCode: 'green',
-  sample: 2
-}, {
-  color: 'blue',
-  colorCode: 'blue',
-  sample: 3
-}, {
-  color: 'yellow',
-  colorCode: 'yellow',
-  sample: 4
-}, {
-  color: 'turquoise',
-  colorCode: '#39e1ff',
-  sample: 5
+const palettes = [
+{
+  name: 'classic',
+  colorInfos: [{
+    color: 'red',
+    colorCode: 'red',
+    sample: 1
+  }, {
+    color: 'green',
+    colorCode: 'green',
+    sample: 2
+  }, {
+    color: 'blue',
+    colorCode: 'blue',
+    sample: 3
+  }, {
+    color: 'yellow',
+    colorCode: 'yellow',
+    sample: 4
+  }, {
+    color: 'turquoise',
+    colorCode: '#39e1ff',
+    sample: 5
+  }]
+}, 
+{
+  name: 'perfect-day-1',
+  colorInfos : [{
+    color: 'pink',
+    colorCode: '#f27eba',
+    sample: 6
+  }, {
+    color: 'sky',
+    colorCode: '#87B2E8',
+    sample: 7
+  }, {
+    color: 'purple',
+    colorCode: '#6c1ae8',
+    sample: 8
+  }, {
+    color: 'orange',
+    colorCode: '#e87a1a',
+    sample: 9
+  }, {
+    color: 'green',
+    colorCode: '#1ae876',
+    sample: 10
+  }]
 }];
+
+const colorInfos = palettes[1].colorInfos;
 
 FlowRouter.route('/color/:color', {
   name: 'Color',
