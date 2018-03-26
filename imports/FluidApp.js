@@ -119,7 +119,7 @@ export function initGL() {
     var kSpringLocation = gl.getUniformLocation(program, "u_kSpring");
     gl.uniform1f(kSpringLocation, 2.0);
     var dSpringLocation = gl.getUniformLocation(program, "u_dSpring");
-    gl.uniform1f(dSpringLocation, 1.0);
+    gl.uniform1f(dSpringLocation, 0.1);
     var massLocation = gl.getUniformLocation(program, "u_mass");
     gl.uniform1f(massLocation, 10.0);
     var dtLocation = gl.getUniformLocation(program, "u_dt");
