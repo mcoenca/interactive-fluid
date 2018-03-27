@@ -90,7 +90,23 @@ const palettes = [
   }, {
     color: 'green',
     colorCode: '#1ae876',
-    sample: 10
+    sample: 2
+  }, {
+    color: 'red',
+    colorCode: 'red',
+    sample: 1
+  }, {
+    color: 'blue',
+    colorCode: 'blue',
+    sample: 3
+  }, {
+    color: 'yellow',
+    colorCode: 'yellow',
+    sample: 4
+  }, {
+    color: 'turquoise',
+    colorCode: '#39e1ff',
+    sample: 5
   }]
 }];
 
