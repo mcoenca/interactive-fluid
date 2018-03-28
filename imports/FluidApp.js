@@ -44,8 +44,6 @@ var paused = false;//while window is resizing
 
 var ext;
 
-window.onload = initGL;
-
 export function initGL() {
 
     // Get A WebGL context
