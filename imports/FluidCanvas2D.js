@@ -1,4 +1,5 @@
 import { Circle } from '/imports/FluidCircle.js';
+import { Rect } from '/imports/FluidRect.js';
 
 function Canvas2D()
 {
@@ -34,6 +35,19 @@ Canvas2D.prototype.resize = function( iWidth, iHeight )
     this.docElt.height = iHeight;
 };
 
+Canvas2D.prototype.addRandomShape = function ( iCenterX, iCenterY, iColor )
+{
+    let rand = Math.round(Math.random());
+    if ( rand === 1 )
+    {
+        this.addCircle( iCenterX, iCenterY, iColor );
+    }
+    else
+    {
+        this.addRect( iCenterX, iCenterY, iColor );
+    }
+};
+
 Canvas2D.prototype.addCircle = function ( iCenterX, iCenterY, iColor )
 {
     var circle = new Circle();
@@ -43,37 +57,39 @@ Canvas2D.prototype.addCircle = function ( iCenterX, iCenterY, iColor )
     this.shapeA.push( circle );
 };
 
+Canvas2D.prototype.addRect = function ( iCenterX, iCenterY, iColor )
+{
+    var rect = new Rect();
+    rect.fillColor = iColor;
+    rect.center.x = iCenterX;
+    rect.center.y = iCenterY;
+    this.shapeA.push( rect );
+};
+
 //Methode appelée à chaque frame
 Canvas2D.prototype.draw = function()
 {
-    var context = this.docElt.getContext("2d");
-    var shapeCount = this.shapeA.length;
-    var eltToRemoveA = [];
+    let context = this.docElt.getContext("2d");
+    let shapeCount = this.shapeA.length;
+    let eltToRemoveA = [];
 
     context.clearRect(0,0,this.docElt.width, this.docElt.height);
     context.fillStyle = ("#000000");
     context.fillRect(0,0,this.docElt.width, this.docElt.height);
-    for ( var i = 0; i < shapeCount; i++ )
+    for ( let i = 0; i < shapeCount; i++ )
     {
-        var cShape = this.shapeA[i];
+        let cShape = this.shapeA[i];
         cShape.draw( context );
-
-        //Ici on modifie le modele pour faire l'animation
-        if ( cShape.radius > 10 )
+        cShape.animate();
+        if ( !cShape.isValid() )
         {
-            cShape.radius -= 10;
-        }
-        else
-        {
-            //Pour supprimer la shape des elements à dessiner
             eltToRemoveA.push( this.shapeA[i] );
         }
     }
 
-
-    for ( var i = 0; i < eltToRemoveA.length; i++)
+    for ( let i = 0; i < eltToRemoveA.length; i++)
     {
-        var idx = this.shapeA.indexOf( eltToRemoveA[i] );
+        let idx = this.shapeA.indexOf( eltToRemoveA[i] );
         this.shapeA.splice( idx, 1 );
     }
 };

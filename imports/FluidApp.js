@@ -412,7 +412,7 @@ export function handleEvents( iCenterX, iCenterY, iColor )
     {
         return;
     }
-    canvas2D.addCircle( iCenterX, iCenterY, iColor );
+    canvas2D.addRandomShape( iCenterX, iCenterY, iColor );
 }
 
 function onMouseOut(){
