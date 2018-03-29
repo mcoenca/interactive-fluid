@@ -2,32 +2,25 @@ class AudioSampler {
     constructor(
         audioCtx, 
         tuna, 
-        soundsRootUrl
+        soundsRootUrl,
+        outputNode,
+        fxNode,
+        quantize
     ){
         this.audioCtx = audioCtx;
         this.tuna = tuna;
         this.soundsRootUrl = soundsRootUrl;
-
+        this.quantize = quantize;
 
         this.fxGainNode = this.audioCtx.createGain();
         this.masterGainNode = this.audioCtx.createGain();
         this.masterGainNode.gain.value = 1.0;
-
-        
-        this.pingPongDelay = new this.tuna.PingPongDelay({
-            wetLevel: 1.0, //0 to 1
-            feedback: 0.2, //0 to 1
-            delayTimeLeft: 150, //1 to 10000 (milliseconds)
-            delayTimeRight: 250 //1 to 10000 (milliseconds)
-        });
-
         this.buffer = null;
 
         // this.bufferSource = this.createBufferSource(); // creates a sound source
 
-        this.masterGainNode.connect(this.audioCtx.destination);
-        this.fxGainNode.connect(this.pingPongDelay);
-        this.pingPongDelay.connect(this.audioCtx.destination);
+        this.masterGainNode.connect(outputNode);
+        this.fxGainNode.connect(fxNode);
     }
 
     createBufferSource() {
@@ -64,14 +57,34 @@ class AudioSampler {
     touchEvent(state, x, y){
         if (state)
         {
-            console.log('click');
+            // console.log('click');
             this.fxGainNode.gain.value = y;
 
             // I added this because replauying the original source did not work
             const newSource = this.createBufferSource();
 
             newSource.playbackRate.value = 1.0 + x;
-            newSource.start(0);                           // play the source now
+            if (this.quantize != 0)
+            {
+                var numQuants = this.audioCtx.currentTime * this.quantize;
+                /*
+                if (numQuants % 1 < 0.1)
+
+                {
+                  newSource.start(0);
+                  console.log(numQuants % 1);
+                }
+                else
+                */
+                {
+                  var playTime = (Math.floor(numQuants) + 1) / this.quantize;
+                  newSource.start(playTime);
+                }
+            }
+            else
+            {
+                newSource.start(0);                           // play the source now
+            }
         }
     }
 };
