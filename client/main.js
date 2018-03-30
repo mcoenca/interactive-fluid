@@ -143,10 +143,11 @@ const streamPalettes = [
         },
         onXPc(xPc) {
           // Dynamic effects with ~ must be changed
-          // with .value or a ramp like
+          // with .value =  or a ramp like
           // pitchEffect.feedback.rampTo(fb / 3);
           pitchEffect.feedback.value = xPc / 2;
-          tremolo.depth.value = xPc;
+          pitchEffect.feedback.rampTo(xPc / 1.6, 0.1);
+          tremolo.depth.rampTo(xPc, 0.1);
         },
         onYPc(yPc) {
           const pitch = Math.floor(scale * (1 - yPc));
