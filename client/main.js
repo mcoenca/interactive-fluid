@@ -334,16 +334,22 @@ Template.Color_page.onRendered(function helloOnRendererd() {
   const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
 
   // $('body').on('mousedown', (e) => {
-  $('body').on('tapstart', (e) => {
+  $('body').on('tapstart', (e, jQueryTouchEvent ) => {
     const width = $(window).width();
     const height = $(window).height();
 
-    e.preventDefault()
+    e.preventDefault();
     console.log('click detected, inserting shape...');
     console.log(e);
 
-    const eX = e.pageX;
-    const eY = e.pageY;
+    let eX = e.pageX;
+    let eY = e.pageY;
+
+    if ( e.touches && e.touches.length )
+    {
+        eX = e.touches[0].pageX;
+        eY = e.touches[0].pageY;
+    }
 
     const circleDiv = $('<div class="good-circle">')
       .css({
