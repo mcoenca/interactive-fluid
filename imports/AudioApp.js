@@ -11,9 +11,9 @@ let kickPlayer;
 let WIDTH;
 let HEIGHT;
 
-export const initAudio = function (AudioContext, soundsRoot) {
+export const initAudio = function (audioContext, soundsRoot) {
   // create web audio api context
-  audioCtx = new AudioContext();
+  audioCtx = audioContext;
   tuna = new Tuna(audioCtx);
   soundsRootUrl = soundsRoot;
   timeOrigin = audioCtx.currentTime;
