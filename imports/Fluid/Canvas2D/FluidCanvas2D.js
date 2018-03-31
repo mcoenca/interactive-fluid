@@ -1,5 +1,5 @@
-import { Circle } from '/imports/FluidCircle.js';
-import { Rect } from '/imports/FluidRect.js';
+import { Circle } from './FluidCircle.js';
+import { Rect } from './FluidRect.js';
 
 function Canvas2D()
 {

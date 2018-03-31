@@ -1,7 +1,7 @@
 /**
  * Created by ghassaei on 2/20/16.
  */
-import {Canvas2D} from '/imports/FluidCanvas2D.js';
+import {Canvas2D} from './Canvas2D/FluidCanvas2D.js';
 import {createProgramFromScripts} from '/imports/FluidGlBoilerplate.js';
 
 var gl;

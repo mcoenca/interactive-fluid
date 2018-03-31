@@ -25,7 +25,7 @@ import './color.html';
 import {perc2color} from '/imports/utils.js';
 
 // Libs
-import { initGL, handleEvents  } from '/imports/FluidApp.js';
+import { initGL, handleEvents  } from '/imports/Fluid/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
 
