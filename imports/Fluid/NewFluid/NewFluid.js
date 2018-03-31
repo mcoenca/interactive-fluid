@@ -1,3 +1,4 @@
+import { default as BaseFluid }         from '../BaseFluid.js'
 import { default as GLProgram }         from '../ShaderHelpers/GlProgram.js'
 import { default as ShaderCompiler }    from '../ShaderHelpers/ShaderCompiler.js'
 import { CreateFBO, CreateDoubleFBO}    from "../ShaderHelpers/FrameBuffer";
@@ -25,11 +26,11 @@ let splatStack = [];
 
 let colorPointerCache = {};
 
-export default class NewFluid
+export default class NewFluid extends BaseFluid
 {
     constructor( iCanvas )
     {
-        this.canvas         = iCanvas;
+        super( iCanvas );
 
         this.textureWidth   = 0;
         this.textureHeight  = 0;
@@ -50,14 +51,6 @@ export default class NewFluid
         this.vorticityProgram           = null;
         this.pressureProgram            = null;
         this.gradienSubtractProgram     = null;
-    }
-
-    init()
-    {
-        this._initWebGl();
-        this._createAllProgram();
-        this._initFramebuffers();
-        this._bindEvents();
     }
 
     run()
@@ -167,18 +160,7 @@ export default class NewFluid
         gl.uniform1i(this.displayProgram.uniforms.uTexture, this.density.read[2]);
         blit(null);
 
-        requestAnimationFrame( this.update.bind( this ) );
-    }
-
-    resize()
-    {
-        if ( this.canvas.width === this.canvas.clientWidth && this.canvas.height === this.canvas.clientHeight)
-        {
-            return;
-        }
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-        this._initFramebuffers();
+        super.update.call( this );
     }
 
     _splat(x, y, dx, dy, color)
@@ -276,22 +258,6 @@ export default class NewFluid
         this.pressure   = CreateDoubleFBO(gl, 6, this.textureWidth, this.textureHeight, this.r.internalFormat, this.r.format, this.texType, gl.NEAREST);
     }
 
-    handleEvents(x, y, color, eventType)
-    {
-        if ( eventType === "startPlaying" )
-        {
-            this._onEventStart( x, y, color );
-        }
-        else if ( eventType === "stillPlaying" )
-        {
-            this._onEventMove( x, y, color );
-        }
-        else if ( eventType === "stopPlaying" )
-        {
-            this._onEventEnd( x, y, color );
-        }
-    }
-
     _onEventStart(x, y, color )
     {
         let cPointer = _GetCreatePointers(color);
@@ -378,34 +344,6 @@ export default class NewFluid
     _onMouseUp(e)
     {
         pointers[0].down = false;
-    }
-
-    _bindEvents()
-    {
-        this.canvas.addEventListener('mousemove', (e) => {
-            this._onMouseMove(e);
-        });
-
-        this.canvas.addEventListener('touchmove', (e) => {
-            this._onTouchMove(e);
-        }, false);
-
-        this.canvas.addEventListener('mousedown', (e) => {
-            this._onMouseDown(e);
-        });
-
-        this.canvas.addEventListener('touchstart', (e) => {
-            this._onTouchStart(e);
-
-        });
-
-        window.addEventListener('mouseup', (e) => {
-            this._onMouseUp(e);
-        });
-
-        window.addEventListener('touchend', (e) => {
-            this._onTouchEnd(e);
-        });
     }
 }
 
