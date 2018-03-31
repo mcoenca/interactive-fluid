@@ -25,11 +25,14 @@ import './color.html';
 import {perc2color} from '/imports/utils.js';
 
 // Libs
-import { initGL, handleEvents  } from '/imports/Fluid/FluidApp.js';
+import { default as FluidApp } from '/imports/Fluid/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
 
 import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.js';
+
+
+let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.NEW_APP;
 
 Shapes = new Mongo.Collection('shapes');
 
@@ -185,6 +188,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
   this.usersLoaded = []; 
   this.streamUsers = {};
   this.backgroundColor = new ReactiveVar('#00ffed');
+  this.fluidApp = new FluidApp();
 
   const drawCircle = (shape) => {
       const { color } = shape;
@@ -196,9 +200,8 @@ Template.fluid.onCreated(function fluidOnCreated() {
       y = yPc * height;
 
       const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
-      
 
-      handleEvents( x, y, colorCode );
+      this.fluidApp.handleEvents( x, y, colorCode );
   };
 
   const playSound = (shape) => {
@@ -237,9 +240,13 @@ Template.fluid.onCreated(function fluidOnCreated() {
     x = xPc * width;
     y = yPc * height;
 
-    handleEvents( x, y, colorCode );
+    this.fluidApp.handleEvents( x, y, colorCode, eventType );
   }
 
+const handleStreamDrawing = (streamEvent) =>
+{
+  this.fluidApp.handleEvents(streamEvent.x,streamEvent.y,streamEvent.colorCode, streamEvent.str)
+}
 
   const handleStreamEvent = (streamEvent) => {
     const {
@@ -288,6 +295,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
     console.log('stream event received');
 
     handleStreamEvent(streamEvent);
+    handleStreamDrawing(streamEvent);
   })
 });
 /////////////////////////////////////////
@@ -304,11 +312,8 @@ Template.fluid.onRendered(function fluidOnRendered() {
   if (!USE_STREAM_COLOR) this.loadedUsers = colorInfos.map(loadUser);
 
   console.log(this.loadedUsers);
-
-  this.fluidCanvas = initGL({
-    canvasGlId: 'glcanvas', 
-    canvas2dId: '2dcanvas'
-  });
+  this.fluidApp.init();
+  this.fluidApp.run( CURRENT_FLUID_APP );
 
   const onNoteHook = (note) => {
     const {note : {name, number, octave}} = note;
