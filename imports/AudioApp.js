@@ -1,5 +1,7 @@
 import { AudioSampler } from '/imports/AudioSampler.js';
+import { AudioSynth } from '/imports/AudioSynth.js';
 import Tuna from 'tunajs';
+import Tone from 'tone';
 
 let audioCtx;
 let tuna;
@@ -8,13 +10,16 @@ let timeOrigin;
 let outputNode;
 let fxNode;
 let kickPlayer;
+let bassPlayer;
 let WIDTH;
 let HEIGHT;
+let beatCount = 0;
 
 export const initAudio = function (audioContext, soundsRoot) {
   // create web audio api context
   audioCtx = audioContext;
   tuna = new Tuna(audioCtx);
+  Tone.setContext(audioContext);
   soundsRootUrl = soundsRoot;
   timeOrigin = audioCtx.currentTime;
 
@@ -34,8 +39,28 @@ export const initAudio = function (audioContext, soundsRoot) {
 
   outputNode.connect(audioCtx.destination);
   fxNode.connect(audioCtx.destination);
-  kickPlayer = createUser(1);
-  setInterval(function(){kickPlayer.sampler.touchEvent(true, 0, 0.1);}, 1000);
+  kickPlayer = createUser(
+    {
+      voice: 'sampler',
+      sound: '001',
+      quantize: 1
+    }
+  );
+  bassPlayer = createUser(
+    {
+      voice: 'synth',
+      sound: 'bass',
+      quantize: 1
+    }
+  );
+  setInterval(function(){
+    kickPlayer.sampler.touchEvent('start', 0, 0.9);
+    if (beatCount % 16 == 0) {
+      bassPlayer.sampler.touchEvent('start', 0.99, 0.8);}
+    else if (beatCount % 16 == 8){
+      bassPlayer.sampler.touchEvent('start', 0.7, 0.8);}
+    beatCount = (beatCount+1) % 16;
+    }, 1000);
   // create initial window dimensions
   WIDTH = window.innerWidth;
   HEIGHT = window.innerHeight;
@@ -56,19 +81,25 @@ const sendClick = function (e) {
 }
 
 const simpleSendClick = (sampler) => (e) => {
-  sampler.touchEvent(true, e.clientX/WIDTH, e.clientY/HEIGHT);
+  sampler.touchEvent(e.evt, e.clientX/WIDTH, e.clientY/HEIGHT);
 }
 
 
-export const createUser = function(sample) {
-  const userSampler = new AudioSampler(audioCtx, tuna, soundsRootUrl, outputNode, fxNode, 8);
-  //var user2 = new AudioSampler();
-  userSampler.setSample(sample);
-  //user2.setSample(3);
-  //
+export const createUser = function(userStruct) {
+  var user;
+
+  if (userStruct.voice == 'sampler')
+  {
+    user = new AudioSampler(audioCtx, tuna, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
+  }
+  else if (userStruct.voice == 'synth')
+  {
+    user = new AudioSynth(audioCtx, tuna, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
+  }
+
   return {
-    sampler : userSampler,
-    sendClick : simpleSendClick(userSampler)
+    sampler : user,
+    sendClick : simpleSendClick(user)
   }
 }
 

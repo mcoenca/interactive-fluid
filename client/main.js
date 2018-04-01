@@ -33,6 +33,7 @@ import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.j
 
 
 let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.NEW_APP;
+let audioContext;
 
 Shapes = new Mongo.Collection('shapes');
 
@@ -56,23 +57,23 @@ const palettes = [
   colorInfos: [{
     color: 'red',
     colorCode: 'red',
-    sample: 1
+    id: 1
   }, {
     color: 'green',
     colorCode: 'green',
-    sample: 2
+    id: 2
   }, {
     color: 'blue',
     colorCode: 'blue',
-    sample: 3
+    id: 3
   }, {
     color: 'yellow',
     colorCode: 'yellow',
-    sample: 4
+    id: 4
   }, {
     color: 'turquoise',
     colorCode: '#39e1ff',
-    sample: 5
+    id: 5
   }]
 }, 
 {
@@ -80,39 +81,39 @@ const palettes = [
   colorInfos : [{
     color: 'pink',
     colorCode: '#f27eba',
-    sample: 6
+    id: 6
   }, {
     color: 'sky',
     colorCode: '#87B2E8',
-    sample: 7
+    id: 7
   }, {
     color: 'purple',
     colorCode: '#6c1ae8',
-    sample: 8
+    id: 8
   }, {
     color: 'orange',
     colorCode: '#e87a1a',
-    sample: 9
+    id: 9
   }, {
     color: 'green',
     colorCode: '#1ae876',
-    sample: 2
+    id: 2
   }, {
     color: 'red',
     colorCode: 'red',
-    sample: 1
+    id: 1
   }, {
     color: 'blue',
     colorCode: 'blue',
-    sample: 3
+    id: 3
   }, {
     color: 'yellow',
     colorCode: 'yellow',
-    sample: 4
+    id: 4
   }, {
     color: 'turquoise',
     colorCode: '#39e1ff',
-    sample: 5
+    id: 5
   }]
 }];
 
@@ -122,8 +123,76 @@ const streamPalettes = [
 {
   name: 'classic',
   colorInfos: [{
+    color: 'red',
+    colorCode: 'red',
+    id: 1,
+    voice: 'sampler',
+    sound: '001',
+    quantize: 4
+  }, {
+    color: 'green',
+    colorCode: '#1ae876',
+    id: 2,
+    voice: 'sampler',
+    sound: '002',
+    quantize: 8
+  }, {
+    color: 'blue',
+    colorCode: 'blue',
+    id: 3,
+    voice: 'sampler',
+    sound: '003',
+    quantize: 8
+  }, {
+    color: 'yellow',
+    colorCode: 'yellow',
+    id: 4,
+    voice: 'sampler',
+    sound: '004',
+    quantize: 8
+  }, {
+    color: 'turquoise',
+    colorCode: '#39e1ff',
+    id: 5,
+    voice: 'sampler',
+    sound: '005',
+    quantize: 8
+  }, {
+    color: 'pink',
+    colorCode: '#f27eba',
+    id: 6,
+    voice: 'synth',
+    sound: 'noise',
+    quantize: 8
+  }, {
+    color: 'sky',
+    colorCode: '#87B2E8',
+    id: 7,
+    voice: 'synth',
+    sound: '007',
+    quantize: 8
+  }, {
+    color: 'purple',
+    colorCode: '#6c1ae8',
+    id: 8,
+    voice: 'synth',
+    sound: '008',
+    quantize: 8
+  }, {
+    color: 'orange',
+    colorCode: '#e87a1a',
+    id: 9,
+    voice: 'synth',
+    sound: '009',
+    quantize: 8
+  }, {
     color: 'violet',
     colorCode: 'purple',
+    id : 10,
+    voice: 'synth',
+    sound: '010',
+    quantize: 8
+    /*
     generateSynth() {
       // Test synth and Tone.js modulation
       const scale = 36;
@@ -160,7 +229,7 @@ const streamPalettes = [
           // remove synth from memory
         }
       }
-    },
+    },*/
   }]
 }
 ];
@@ -215,6 +284,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
     y = yPc * $(window).height();
 
     const audioEvent = {
+      evt: 'start',
       clientX: x,
       clientY: y,
     };
@@ -257,11 +327,41 @@ const handleStreamDrawing = (streamEvent) =>
       yPc
     } = streamEvent;  
 
+
+    const goodUser = _.find(this.loadedUsers, ({color}) => color === streamColor);
+
+    if(!goodUser) return;
+
+    x = xPc * $(window).width();
+    y = yPc * $(window).height();
+
+    const audioEvent = {
+      evt: 'start',
+      clientX: x,
+      clientY: y,
+    };
+
+
+    if (eventType === 'startPlaying') {
+      goodUser.sendClick(audioEvent);
+    }
+
+    if (eventType === 'stillPlaying') {
+      audioEvent.evt = 'drag';
+      goodUser.sendClick(audioEvent);
+    }
+
+    if (eventType === 'stopPlaying') {
+      audioEvent.evt = 'stop';
+      goodUser.sendClick(audioEvent);
+    }
+
+    /*
     let streamUser = this.streamUsers[uuid];
-    
+
     if (!streamUser) {
       const streamColorInfo = _.find(streamColorInfos, (streamColorInfo) => streamColorInfo.color === streamColor);
-      
+
       const synth = streamColorInfo.generateSynth();
 
       this.streamUsers[uuid] = synth;
@@ -282,6 +382,7 @@ const handleStreamDrawing = (streamEvent) =>
     if (eventType === 'stopPlaying') {
       streamUser.synthStop();
     }
+*/
 
     drawStream(streamEvent);
   }
@@ -304,12 +405,14 @@ const USE_STREAM_COLOR = true;
 /////////////////////////////////////////
 Template.fluid.onRendered(function fluidOnRendered() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  
-  if (!USE_STREAM_COLOR) initAudio(new AudioContext(), 'sounds');
+  const audioContext = new AudioContext();
 
-  const loadUser = (color) => (_.extend({color: color.color}, createUser(color.sample)));
+  initAudio(audioContext, 'sounds');
+
+  const loadUser = (color) => (_.extend({color: color.color}, createUser(color)));
 
   if (!USE_STREAM_COLOR) this.loadedUsers = colorInfos.map(loadUser);
+  else this.loadedUsers = streamColorInfos.map(loadUser);
 
   console.log(this.loadedUsers);
   this.fluidApp.init();

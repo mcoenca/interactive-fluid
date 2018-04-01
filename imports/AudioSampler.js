@@ -1,11 +1,12 @@
 class AudioSampler {
     constructor(
         audioCtx, 
-        tuna, 
+        tuna,
         soundsRootUrl,
         outputNode,
         fxNode,
-        quantize
+        quantize,
+        sound
     ){
         this.audioCtx = audioCtx;
         this.tuna = tuna;
@@ -16,6 +17,8 @@ class AudioSampler {
         this.masterGainNode = this.audioCtx.createGain();
         this.masterGainNode.gain.value = 1.0;
         this.buffer = null;
+        this.bufferSource = null;
+        this.setSample(sound);
 
         // this.bufferSource = this.createBufferSource(); // creates a sound source
 
@@ -37,7 +40,7 @@ class AudioSampler {
         var request = new XMLHttpRequest();
         //request.open('GET', 'http://localhost:3000/sounds/00' + sample + '.wav', true);
         // http://localhost:3000/sounds/audioclip-1521391848.wav
-        let url = `${self.soundsRootUrl}/00${sample}.wav`;
+        let url = `${self.soundsRootUrl}/${sample}.wav`;
         console.log(url);
 
         request.open('GET', url, true);
@@ -54,16 +57,16 @@ class AudioSampler {
         request.send();
     }
 
-    touchEvent(state, x, y){
-        if (state)
+    touchEvent(evt, x, y){
+        if (evt == 'start')
         {
             // console.log('click');
-            this.fxGainNode.gain.value = y;
+            this.fxGainNode.gain.value = 1-y;
 
             // I added this because replauying the original source did not work
-            const newSource = this.createBufferSource();
+            this.bufferSource = this.createBufferSource();
 
-            newSource.playbackRate.value = 1.0 + x;
+            this.bufferSource.playbackRate.value = 1.0 + x;
             if (this.quantize != 0)
             {
                 var numQuants = this.audioCtx.currentTime * this.quantize;
@@ -78,13 +81,19 @@ class AudioSampler {
                 */
                 {
                   var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-                  newSource.start(playTime);
+                  this.bufferSource.start(playTime);
                 }
             }
             else
             {
-                newSource.start(0);                           // play the source now
+              this.bufferSource.start(0);                           // play the source now
             }
+        }
+        else if (evt == 'drag')
+        {
+          this.fxGainNode.gain.value = 1-y;
+          this.bufferSource.playbackRate.value = 1.0 + x;
+
         }
     }
 };
