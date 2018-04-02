@@ -138,7 +138,7 @@ export default class BaseFluid
             this._onTouchStart(e);
         });
 
-        this.canvas.addEventListener('onclick', (e) => {
+        this.canvas.addEventListener('click', (e) => {
             this._onClick(e);
         });
 
