@@ -2,8 +2,7 @@ import Tone from 'tone';
 
 class AudioSampler {
     constructor(
-        audioCtx, 
-        tuna,
+        audioCtx,
         soundsRootUrl,
         outputNode,
         fxNode,
@@ -11,7 +10,6 @@ class AudioSampler {
         sound
     ){
         this.audioCtx = audioCtx;
-        this.tuna = tuna;
         this.soundsRootUrl = soundsRootUrl;
         this.quantize = quantize;
 

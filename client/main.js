@@ -183,7 +183,7 @@ const streamPalettes = [
     colorCode: '#e87a1a',
     id: 9,
     voice: 'synth',
-    sound: '009',
+    sound: 'square',
     quantize: 8
   }, {
     color: 'violet',

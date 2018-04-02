@@ -1,6 +1,5 @@
 import { AudioSampler } from '/imports/AudioSampler.js';
 import { AudioSynth } from '/imports/AudioSynth.js';
-import Tuna from 'tunajs';
 import Tone from 'tone';
 
 let audioCtx;
@@ -18,7 +17,7 @@ let beatCount = 0;
 export const initAudio = function (soundsRoot) {
   // create web audio api context
   audioCtx = Tone.context;
-  tuna = new Tuna(audioCtx);
+  //tuna = new Tuna(audioCtx);
 
   soundsRootUrl = soundsRoot;
   timeOrigin = audioCtx.currentTime;
@@ -31,7 +30,7 @@ export const initAudio = function (soundsRoot) {
   outputNode.toMaster();
   fxNode.toMaster();
   // outputNode.gain.value = 1.0;
-  fxConvolver = new tuna.Convolver({
+  /*fxConvolver = new tuna.Convolver({
       highCut: 20000,                         //20 to 22050
       lowCut: 20,                             //20 to 22050
       dryLevel: 0,                            //0 to 1+
@@ -39,10 +38,13 @@ export const initAudio = function (soundsRoot) {
       level: 0.5,                               //0 to 1+, adjusts total output of both wet and dry
       impulse: `${soundsRootUrl}/impulse/033.wav`,    //the path to your impulse response
       bypass: 0
-    });
+    });*/
+  let url = `${soundsRootUrl}/impulse/033.wav`;
+  console.log(url);
+  fxConvolver = new Tone.Convolver(url, () => console.log('ir loaded')).toMaster();
 
-  
-  fxConvolver.connect(fxNode);
+  fxNode.gain.value = 0.5;
+  fxNode.connect(fxConvolver);
   kickPlayer = createUser(
     {
       voice: 'sampler',
@@ -58,7 +60,7 @@ export const initAudio = function (soundsRoot) {
     }
   );
 
-  const initLoop = () => {
+  //const initLoop = () => {
     setInterval(function(){
     kickPlayer.sampler.touchEvent('start', 0, 0.9);
     if (beatCount % 16 == 0) {
@@ -67,7 +69,7 @@ export const initAudio = function (soundsRoot) {
       bassPlayer.sampler.touchEvent('start', 0.7, 0.8);}
     beatCount = (beatCount+1) % 16;
     }, 1000);
-  };
+  //};
 
   
   // create initial window dimensions
@@ -99,11 +101,11 @@ export const createUser = function(userStruct) {
 
   if (userStruct.voice == 'sampler')
   {
-    user = new AudioSampler(audioCtx, tuna, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
+    user = new AudioSampler(audioCtx, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
   }
   else if (userStruct.voice == 'synth')
   {
-    user = new AudioSynth(audioCtx, tuna, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
+    user = new AudioSynth(audioCtx, soundsRootUrl, outputNode, fxNode, userStruct.quantize, userStruct.sound);
   }
 
   return {

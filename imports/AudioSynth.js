@@ -6,6 +6,7 @@ const synths = {
   bass: {
     create(instance) {
       instance.synth = new Tone.Synth();
+      instance.output = instance.synth;
     },
     touchEvent(evt, x,y) {
       if (evt == 'start')
@@ -42,6 +43,7 @@ const synths = {
           type: "square"
         }
       });
+      instance.output = instance.synth;
     },
     touchEvent(evt, x, y) {
       if (evt == 'start')
@@ -80,7 +82,8 @@ const synths = {
       instance.tremolo.spread = 180;
 
       instance.synth = new Tone.Synth().connect(instance.tremolo);
-      return instance.pitchEffect;
+      instance.output = instance.pitchEffect;
+      //return instance.pitchEffect;
     },
 
     touchEvent(evt, x, y) {
@@ -94,7 +97,7 @@ const synths = {
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-          this.synth.triggerAttack('C2', playtime);
+          this.synth.triggerAttack('C2', playTime);
         }
         else
         {
@@ -121,7 +124,6 @@ const synths = {
 class AudioSynth {
   constructor(
     audioCtx,
-    tuna,
     soundsRootUrl,
     outputNode,
     fxNode,
@@ -129,25 +131,24 @@ class AudioSynth {
     sound
   ){
     this.audioCtx = audioCtx;
-    Tone.setContext(audioCtx);
     this.soundsRootUrl = soundsRootUrl;
     this.quantize = quantize;
     this.sound = sound;
 
-    // this.fxGainNode = new Tone.Gain();
-    // this.masterGainNode = new Tone.Gain();
+    this.fxGainNode = new Tone.Gain();
+    this.masterGainNode = new Tone.Gain();
 
-    // this.masterGainNode.connect(outputNode);
-    // this.fxGainNode.connect(fxNode);
+    this.masterGainNode.connect(outputNode);
+    this.fxGainNode.connect(fxNode);
 
     let synthInfo = synths[this.sound];
     if (!synthInfo) synthInfo = synths['bass'];
 
     synthInfo.create(this);
 
-    // this.synth.connect(this.masterGainNode);
-    // this.synth.connect(this.fxGainNode);
-    this.synth.toMaster();
+    this.output.connect(this.masterGainNode);
+    this.output.connect(this.fxGainNode);
+    //this.synth.toMaster();
 
     this.touchEvent = synthInfo.touchEvent.bind(this);
   }

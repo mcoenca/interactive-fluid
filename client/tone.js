@@ -17,10 +17,15 @@ const generateSynth = () => {
   const tremolo = new Tone.Tremolo(2, 0).connect(pitchEffect).start();
   tremolo.spread = 180;
 
-  const synth = new Tone.Synth().connect(tremolo);
+  const synth = new Tone.MonoSynth().connect(tremolo);
+  //synth.oscillator.type = "pwm";
 
+  let url = `sounds/001.wav`;
+  console.log(url);
+  const player = new Tone.Player(url, () => console.log('sample loaded')).toMaster();
   return {
-    synthStart(xPc, yPc) { 
+    synthStart(xPc, yPc) {
+      player.start();
       synth.triggerAttack('C2');
       tremolo.start();
     },
