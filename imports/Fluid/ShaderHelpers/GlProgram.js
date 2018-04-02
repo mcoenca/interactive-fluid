@@ -5,6 +5,7 @@ export default class GLProgram
         this.glContext = glContext;
 
         this.uniforms = {};
+        this.attributes = {};
         this.program = this.glContext.createProgram();
 
         this.glContext.attachShader(this.program, vertexShader);
@@ -19,6 +20,13 @@ export default class GLProgram
         {
             const uniformName = this.glContext.getActiveUniform(this.program, i).name;
             this.uniforms[uniformName] = this.glContext.getUniformLocation(this.program, uniformName);
+        }
+
+        const attributeCount = this.glContext.getProgramParameter(this.program, this.glContext.ACTIVE_ATTRIBUTES);
+        for (let i = 0; i < attributeCount; i++)
+        {
+            const attributeName = this.glContext.getActiveAttrib(this.program, i).name;
+            this.attributes[attributeName] = this.glContext.getAttribLocation(this.program, attributeName);
         }
     }
 

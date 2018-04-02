@@ -1,6 +1,6 @@
 
 
-const BASE_VERTEX = `        
+export const BASE_VERTEX = `        
     attribute vec2 a_position;
     uniform float u_flipY;
     attribute vec2 a_texCoord;
@@ -12,7 +12,7 @@ const BASE_VERTEX = `
     }
 `;
 
-const FRAGMENT = `
+export const FRAGMENT = `
     precision mediump float;
 
     //texture arrays

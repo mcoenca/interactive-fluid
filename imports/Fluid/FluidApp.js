@@ -1,4 +1,4 @@
-import { Run as RunOriginalFluid, handleEvents as OriginalFluidHandleEvents } from './OriginalFluid/OriginalFluid.js'
+import { default as OriginalFluidSimulation } from './OriginalFluid/OriginalFluid.js'
 import { default as NewFluidSimulation } from './NewFluid/NewFluid.js'
 
 const FLUID_SIMULATION_APPS = {
@@ -32,31 +32,21 @@ export default class FluidApp
         switch (iAppID)
         {
             case FLUID_SIMULATION_APPS.ORIGINAL_APP:
-                RunOriginalFluid();
+                this.fluidSimu= new OriginalFluidSimulation( this.webglCanvas );
                 break;
             case FLUID_SIMULATION_APPS.NEW_APP:
                 this.fluidSimu= new NewFluidSimulation( this.webglCanvas );
-                this.fluidSimu.init();
-                this.fluidSimu.run();
                 break;
             default:
                 throw new Error("Fluid.FluidApp [Run] Expecting iAppID to be a value of FLUID_SIMULATION_APPS_KEY");
         }
+        this.fluidSimu.init();
+        this.fluidSimu.run();
         this.id = iAppID;
     }
 
     handleEvents( x, y, color, eventType )
     {
-        switch (this.id)
-        {
-            case FLUID_SIMULATION_APPS.ORIGINAL_APP:
-                OriginalFluidHandleEvents( x, y, color, eventType );
-                break;
-            case FLUID_SIMULATION_APPS.NEW_APP:
-                this.fluidSimu.handleEvents(x, y, color, eventType);
-                break;
-            default:
-                throw new Error("Fluid.FluidApp [Run] Expecting iAppID to be a value of FLUID_SIMULATION_APPS_KEY");
-        }
+        this.fluidSimu.handleEvents( x, y, color, eventType );
     }
 }

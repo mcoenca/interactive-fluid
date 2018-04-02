@@ -82,11 +82,25 @@ export default class BaseFluid
     {
     }
 
+    _onClick(e)
+    {
+
+    }
+
+    _onMouseOut(e)
+    {
+
+    }
+
     _onMouseMove(e)
     {
     }
 
     _onMouseDown(e)
+    {
+    }
+
+    _onMouseOver(e)
     {
     }
 
@@ -122,9 +136,19 @@ export default class BaseFluid
 
         this.canvas.addEventListener('touchstart', (e) => {
             this._onTouchStart(e);
-
         });
 
+        this.canvas.addEventListener('onclick', (e) => {
+            this._onClick(e);
+        });
+
+        this.canvas.addEventListener('onmouseover', (e) => {
+            this._onMouseOver(e);
+        });
+
+        this.canvas.addEventListener('onmouseout', (e) => {
+            this._onMouseOut(e);
+        });
         window.addEventListener('mouseup', (e) => {
             this._onMouseUp(e);
         });
@@ -132,5 +156,8 @@ export default class BaseFluid
         window.addEventListener('touchend', (e) => {
             this._onTouchEnd(e);
         });
+        window.addEventListener( 'onresize', (e) => {
+            this.resize();
+        })
     }
 }
