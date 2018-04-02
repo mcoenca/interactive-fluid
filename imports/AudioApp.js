@@ -15,19 +15,23 @@ let WIDTH;
 let HEIGHT;
 let beatCount = 0;
 
-export const initAudio = function (audioContext, soundsRoot) {
+export const initAudio = function (soundsRoot) {
   // create web audio api context
-  audioCtx = audioContext;
+  audioCtx = Tone.context;
   tuna = new Tuna(audioCtx);
-  Tone.setContext(audioContext);
+
   soundsRootUrl = soundsRoot;
   timeOrigin = audioCtx.currentTime;
 
-  console.log(audioCtx.sampleRate);
+  // console.log(audioCtx.sampleRate);
   // audio setup
-  outputNode = audioCtx.createGain();
-  outputNode.gain.value = 1.0;
-  fxNode = new tuna.Convolver({
+  // 
+  fxNode = new Tone.Gain();
+  outputNode = new Tone.Gain();
+  outputNode.toMaster();
+  fxNode.toMaster();
+  // outputNode.gain.value = 1.0;
+  fxConvolver = new tuna.Convolver({
       highCut: 20000,                         //20 to 22050
       lowCut: 20,                             //20 to 22050
       dryLevel: 0,                            //0 to 1+
@@ -37,8 +41,8 @@ export const initAudio = function (audioContext, soundsRoot) {
       bypass: 0
     });
 
-  outputNode.connect(audioCtx.destination);
-  fxNode.connect(audioCtx.destination);
+  
+  fxConvolver.connect(fxNode);
   kickPlayer = createUser(
     {
       voice: 'sampler',
@@ -53,7 +57,9 @@ export const initAudio = function (audioContext, soundsRoot) {
       quantize: 1
     }
   );
-  setInterval(function(){
+
+  const initLoop = () => {
+    setInterval(function(){
     kickPlayer.sampler.touchEvent('start', 0, 0.9);
     if (beatCount % 16 == 0) {
       bassPlayer.sampler.touchEvent('start', 0.99, 0.8);}
@@ -61,6 +67,9 @@ export const initAudio = function (audioContext, soundsRoot) {
       bassPlayer.sampler.touchEvent('start', 0.7, 0.8);}
     beatCount = (beatCount+1) % 16;
     }, 1000);
+  };
+
+  
   // create initial window dimensions
   WIDTH = window.innerWidth;
   HEIGHT = window.innerHeight;

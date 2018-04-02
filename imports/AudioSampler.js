@@ -1,3 +1,5 @@
+import Tone from 'tone';
+
 class AudioSampler {
     constructor(
         audioCtx, 
@@ -13,48 +15,24 @@ class AudioSampler {
         this.soundsRootUrl = soundsRootUrl;
         this.quantize = quantize;
 
-        this.fxGainNode = this.audioCtx.createGain();
-        this.masterGainNode = this.audioCtx.createGain();
-        this.masterGainNode.gain.value = 1.0;
-        this.buffer = null;
-        this.bufferSource = null;
-        this.setSample(sound);
-
-        // this.bufferSource = this.createBufferSource(); // creates a sound source
+        this.fxGainNode = new Tone.Gain();
+        this.masterGainNode = new Tone.Gain();
 
         this.masterGainNode.connect(outputNode);
         this.fxGainNode.connect(fxNode);
-    }
 
-    createBufferSource() {
-        const bufferSource = this.audioCtx.createBufferSource();
-        bufferSource.connect(this.fxGainNode);       // connect the source to the context's destination (the speakers)
-        bufferSource.connect(this.masterGainNode);       // connect the source to the context's destination (the speakers)
-        bufferSource.buffer = this.buffer;
+        this.player = null;
 
-        return bufferSource;
+        this.setSample(sound);
     }
 
     setSample(sample){
-        var self = this;
-        var request = new XMLHttpRequest();
-        //request.open('GET', 'http://localhost:3000/sounds/00' + sample + '.wav', true);
-        // http://localhost:3000/sounds/audioclip-1521391848.wav
-        let url = `${self.soundsRootUrl}/${sample}.wav`;
+        let url = `${this.soundsRootUrl}/${sample}.wav`;
         console.log(url);
-
-        request.open('GET', url, true);
-        request.responseType = 'arraybuffer';
-
-        // Decode asynchronously
-        request.onload = function() {
-            self.audioCtx.decodeAudioData(request.response, function(buffer) {
-                self.buffer = buffer;
-                // self.bufferSource.buffer = buffer;
-                console.log('sample loaded');
-            }, null);
-        }
-        request.send();
+        this.player = new Tone.Player(url, () => console.log('sample loaded')).fan(this.masterGainNode, this.fxGainNode);
+        // this.player.toMaster();
+        // this.player.connect(this.masterGainNode);
+        // this.player.connect(this.fxGainNode);
     }
 
     touchEvent(evt, x, y){
@@ -63,10 +41,7 @@ class AudioSampler {
             // console.log('click');
             this.fxGainNode.gain.value = 1-y;
 
-            // I added this because replauying the original source did not work
-            this.bufferSource = this.createBufferSource();
-
-            this.bufferSource.playbackRate.value = 1.0 + x;
+            this.player.playbackRate.value = 1.0 + x;
             if (this.quantize != 0)
             {
                 var numQuants = this.audioCtx.currentTime * this.quantize;
@@ -81,18 +56,18 @@ class AudioSampler {
                 */
                 {
                   var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-                  this.bufferSource.start(playTime);
+                  this.player.start(playTime);
                 }
             }
             else
             {
-              this.bufferSource.start(0);                           // play the source now
+              this.player.start(0);                           // play the source now
             }
         }
         else if (evt == 'drag')
         {
           this.fxGainNode.gain.value = 1-y;
-          this.bufferSource.playbackRate.value = 1.0 + x;
+          this.player.playbackRate.value = 1.0 + x;
 
         }
     }

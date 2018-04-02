@@ -190,7 +190,7 @@ const streamPalettes = [
     colorCode: 'purple',
     id : 10,
     voice: 'synth',
-    sound: '010',
+    sound: 'tremoloTriangle',
     quantize: 8
     /*
     generateSynth() {
@@ -249,6 +249,14 @@ FlowRouter.route('/stream-color/:streamColor', {
     BlazeLayout.render('App_body', {main: 'Color_stream_page'});
   }
 });
+
+FlowRouter.route('/tone', {
+  action(params, queryParams) {
+    BlazeLayout.render('App_body', {
+      main: 'Tone_page'
+    })
+  }
+})
 
 
 // === FLUID PAGE
@@ -404,10 +412,10 @@ const handleStreamDrawing = (streamEvent) =>
 const USE_STREAM_COLOR = true;
 /////////////////////////////////////////
 Template.fluid.onRendered(function fluidOnRendered() {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const audioContext = new AudioContext();
+  // const AudioContext = window.AudioContext || window.webkitAudioContext;
+  // const audioContext = new AudioContext();
 
-  initAudio(audioContext, 'sounds');
+  initAudio('sounds');
 
   const loadUser = (color) => (_.extend({color: color.color}, createUser(color)));
 
