@@ -44,6 +44,7 @@ Template.Color_page.onRendered(function onRendered() {
   }
 
   document.onmousemove = handleMouseMove;
+  $(document).on('touchmove', handleMouseMove);
 
   const newCircle = (x, y) => {
     const circleDiv = $('<div class="good-circle">')

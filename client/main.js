@@ -33,10 +33,13 @@ const USE_STREAM_COLOR = true;
 const ENABLE_KICK_LOOP = true;
 
 // === FLUID PAGE
+const loadUser = (userColor) => (_.extend({
+  color: userColor.color
+}, createUser(userColor)));
 
 Template.fluid.onCreated(function fluidOnCreated() {
-  this.usersLoaded = []; 
-  // this.streamUsers = {};
+  this.users = {};
+
   this.backgroundColor = new ReactiveVar('#00ffed');
   this.fluidApp = new FluidApp();
 
@@ -73,42 +76,20 @@ Template.fluid.onCreated(function fluidOnCreated() {
 
     console.log(streamEvent);
 
+    let user = this.users[uuid];
 
-    const goodUser = _.find(this.loadedUsers, (user) => user.color === color);
+    if (!user) {
+      const colorInfo = _.find(colorInfos, (colorInfo) => colorInfo.color === color);
 
-    if(!goodUser) return;
+      user = loadUser(colorInfo);
 
-    goodUser.handleEvent(streamEvent);
+      this.users[uuid] = user;
+    }
+
+    if(!user) return;
+
+    user.handleEvent(streamEvent);
     drawStream(streamEvent);
-
-
-    /*
-    let streamUser = this.streamUsers[uuid];
-
-    if (!streamUser) {
-      const streamColorInfo = _.find(streamColorInfos, (streamColorInfo) => streamColorInfo.color === streamColor);
-
-      const synth = streamColorInfo.generateSynth();
-
-      this.streamUsers[uuid] = synth;
-      streamUser = this.streamUsers[uuid];
-    }
-
-    if (eventType === 'startPlaying') {
-      streamUser.onXPc(xPc);
-      streamUser.onYPc(yPc);
-      streamUser.synthStart(xPc, yPc);
-    }
-
-    if (eventType === 'stillPlaying') {
-      streamUser.onXPc(xPc);
-      streamUser.onYPc(yPc);
-    }
-
-    if (eventType === 'stopPlaying') {
-      streamUser.synthStop();
-    }
-*/
   }
 
   streamChannel.subscribe('streamEvents', ({data: streamEvent}) => {
@@ -123,14 +104,6 @@ Template.fluid.onRendered(function fluidOnRendered() {
   // LOADING AUDIO //
   ///////////////////
   initAudio('sounds', ENABLE_KICK_LOOP);
-
-  const loadUser = (userColor) => (_.extend({
-    color: userColor.color
-  }, createUser(userColor)));
-
-  this.loadedUsers = colorInfos.map(loadUser);
-
-  console.log(this.loadedUsers);
 
   ///////////////////
   // LOADING FLUID //
