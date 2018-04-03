@@ -56,7 +56,7 @@ const palettes = [
   name: 'classic',
   colorInfos: [{
     color: 'red',
-    colorCode: 'red',
+    colorCode: '#ff0000',
     id: 1
   }, {
     color: 'green',
@@ -100,7 +100,7 @@ const palettes = [
     id: 2
   }, {
     color: 'red',
-    colorCode: 'red',
+    colorCode: '#ff0000',
     id: 1
   }, {
     color: 'blue',
@@ -187,7 +187,7 @@ const streamPalettes = [
     quantize: 8
   }, {
     color: 'violet',
-    colorCode: 'purple',
+    colorCode: '#9932CC',
     id : 10,
     voice: 'synth',
     sound: 'tremoloTriangle',
@@ -268,7 +268,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
   this.fluidApp = new FluidApp();
 
   const drawCircle = (shape) => {
-      const { color } = shape;
+      const { color, eventType } = shape;
       const {xPc, yPc} = shape.events[0];
       const width = $(window).width();
       const height = $(window).height();
@@ -278,7 +278,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
 
       const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
 
-      this.fluidApp.handleEvents( x, y, colorCode );
+      this.fluidApp.handleEvents( x, y, colorCode, eventType );
   };
 
   const playSound = (shape) => {
@@ -479,10 +479,12 @@ Template.Color_page.onRendered(function helloOnRendererd() {
 
     const shape = {
       color: FlowRouter.getParam('color'),
-      events: [{ 
+      eventType: 'tap',
+      events: [{
         xPc: eX / width,
         yPc: eY / height,
-      }]
+      }
+    ]
     };
     channel.publish('shapes', shape)
     // Shapes.insert(shape);

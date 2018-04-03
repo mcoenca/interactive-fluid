@@ -68,6 +68,10 @@ export default class BaseFluid
         {
             this._onEventEnd( x, y, color );
         }
+        else if ( eventType === "tap" )
+        {
+            this._onEventClick( x, y, color );
+        }
     }
 
     _onEventStart(x, y, color )
@@ -79,6 +83,10 @@ export default class BaseFluid
     }
 
     _onEventEnd( x, y, color )
+    {
+    }
+
+    _onEventClick( x, y, color )
     {
     }
 

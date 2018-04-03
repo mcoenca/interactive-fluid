@@ -4,9 +4,12 @@ import { default as GLProgram }         from '../ShaderHelpers/GlProgram.js'
 import { default as ShaderCompiler }    from '../ShaderHelpers/ShaderCompiler.js'
 import { GetWebGLContext}               from "../ShaderHelpers/WebGL.js";
 import * as SHADERS                     from './Shaders.js'
+import FluidLine                        from "../Canvas2D/FluidLine";
 
 let gl  = null;
 let ext = null;
+
+let gShapeCache = {};
 
 export default class OriginalFluid extends BaseFluid
 {
@@ -281,7 +284,29 @@ export default class OriginalFluid extends BaseFluid
         return super.update.call(this);
     }
 
-    handleEvents(x, y, color, eventType)
+    _onEventStart( x, y, color )
+    {
+        let shape = _GetCreateShapeForColor( color );
+        this.canvas2D.shapeA.push( shape );
+        shape.points.push( {x: x, y:y } );
+        shape.fillColor = color;
+    }
+
+    _onEventMove( x, y, color )
+    {
+        let shape = _GetCreateShapeForColor( color );
+        shape.points.push( {x: x, y:y } );
+        shape.fillColor = color;
+    }
+
+    _onEventEnd( x, y, color )
+    {
+        let shape = _GetCreateShapeForColor( color );
+        shape.destroy();
+        delete gShapeCache[color];
+    }
+
+    _onEventClick( x, y, color )
     {
         if ( !this.canvas2D )
         {
@@ -331,6 +356,15 @@ export default class OriginalFluid extends BaseFluid
         gl.uniform1f(this.fluidProgram.uniforms.u_mouseEnable, 0);
     }
 }
+
+let _GetCreateShapeForColor = function( color )
+{
+    if ( !gShapeCache[color] )
+    {
+        gShapeCache[color] = new FluidLine()
+    }
+    return gShapeCache[color];
+};
 
 function makeTexture(gl){
 

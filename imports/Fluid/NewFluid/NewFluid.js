@@ -3,7 +3,8 @@ import { default as GLProgram }         from '../ShaderHelpers/GlProgram.js'
 import { default as ShaderCompiler }    from '../ShaderHelpers/ShaderCompiler.js'
 import { CreateFBO, CreateDoubleFBO}    from "../ShaderHelpers/FrameBuffer";
 import { GetWebGLContext}               from "../ShaderHelpers/WebGL.js";
-import * as SHADERS from './Shaders';
+import { hexToRGB}                      from "../../utils";
+import * as SHADERS                     from './Shaders';
 
 // const canvas = document.getElementById('glcanvas');
 // canvas.width = canvas.clientWidth;
@@ -258,11 +259,27 @@ export default class NewFluid extends BaseFluid
         this.pressure   = CreateDoubleFBO(gl, 6, this.textureWidth, this.textureHeight, this.r.internalFormat, this.r.format, this.texType, gl.NEAREST);
     }
 
+    _onEventClick( x, y, color )
+    {
+        let cPointer = _GetCreatePointers(color);
+        let rgb = hexToRGB(color);
+        let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
+        cPointer.down = true;
+        cPointer.moved = cPointer.down;
+        cPointer.dx = 10.0;
+        cPointer.dy = 10.0;
+        cPointer.y  = y;
+        cPointer.x  = x;
+        cPointer.color = colorRGB;
+    }
+
     _onEventStart(x, y, color )
     {
         let cPointer = _GetCreatePointers(color);
+        let rgb = hexToRGB(color);
+        let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
         cPointer.down = true;
-        cPointer.color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+        cPointer.color = colorRGB;
     }
 
     _onEventMove( x, y, color )
@@ -278,12 +295,13 @@ export default class NewFluid extends BaseFluid
     _onEventEnd( x, y, color )
     {
         let cPointer = _GetCreatePointers(color);
+        cPointer.down = false;
         cPointer.moved = cPointer.down;
         cPointer.dx = 0;
         cPointer.dy = 0;
         cPointer.x = 0;
         cPointer.y = 0;
-        cPointer.down = false;
+        delete colorPointerCache[color];
     }
 
     _onMouseMove(e)
