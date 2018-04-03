@@ -32,7 +32,7 @@ import { initAudio, createUser } from '/imports/AudioApp.js';
 import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.js';
 
 
-let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.NEW_APP;
+let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
 let audioContext;
 
 Shapes = new Mongo.Collection('shapes');
