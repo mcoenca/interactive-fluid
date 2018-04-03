@@ -9,7 +9,7 @@ const synths = {
       instance.output = instance.synth;
     },
     touchEvent(evt, x,y) {
-      if (evt == 'start')
+      if (evt == 'startPlaying')
       {
         //console.log('click');
         this.fxGainNode.gain.value = 1-y;
@@ -26,11 +26,11 @@ const synths = {
           this.synth.triggerAttack(note, 0);
         }
       }
-      else if (evt == 'drag')
+      else if (evt == 'stillPlaying')
       {
 
       }
-      else if (evt == 'stop')
+      else if (evt == 'stopPlaying')
       {
         this.synth.triggerRelease();
       }
@@ -46,7 +46,7 @@ const synths = {
       instance.output = instance.synth;
     },
     touchEvent(evt, x, y) {
-      if (evt == 'start')
+      if (evt == 'startPlaying')
       {
         //console.log('click');
         this.fxGainNode.gain.value = 1-y;
@@ -63,11 +63,11 @@ const synths = {
           this.synth.triggerAttack(note, 0);
         }
       }
-      else if (evt == 'drag')
+      else if (evt == 'stillPlaying')
       {
 
       }
-      else if (evt == 'stop')
+      else if (evt == 'stopPlaying')
       {
         this.synth.triggerRelease();
       }
@@ -89,7 +89,7 @@ const synths = {
     touchEvent(evt, x, y) {
       const scale = 36;
 
-      if (evt == 'start')
+      if (evt == 'startPlaying')
       {
         this.tremolo.start();
 
@@ -104,7 +104,7 @@ const synths = {
           this.synth.triggerAttack('C2', 0);
         }
       }
-      else if (evt == 'drag')
+      else if (evt == 'stillPlaying')
       {
         this.pitchEffect.feedback.value = x / 2;
         this.pitchEffect.feedback.rampTo(x / 1.6, 0.1);
@@ -113,7 +113,7 @@ const synths = {
         const pitch = Math.floor(scale * (1 - y));
         this.pitchEffect.pitch = pitch;
       }
-      else if (evt == 'stop')
+      else if (evt == 'stopPlaying')
       {
         this.synth.triggerRelease();
       }

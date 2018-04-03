@@ -27,14 +27,15 @@ class AudioSampler {
     setSample(sample){
         let url = `${this.soundsRootUrl}/${sample}.wav`;
         console.log(url);
-        this.player = new Tone.Player(url, () => console.log('sample loaded')).fan(this.masterGainNode, this.fxGainNode);
+        this.player = new Tone.Player(url, () => console.log('sample loaded'))
+            .fan(this.masterGainNode, this.fxGainNode);
         // this.player.toMaster();
         // this.player.connect(this.masterGainNode);
         // this.player.connect(this.fxGainNode);
     }
 
     touchEvent(evt, x, y){
-        if (evt == 'start')
+        if (evt == 'startPlaying')
         {
             // console.log('click');
             this.fxGainNode.gain.value = 1-y;
@@ -62,7 +63,7 @@ class AudioSampler {
               this.player.start(0);                           // play the source now
             }
         }
-        else if (evt == 'drag')
+        else if (evt == 'stillPlaying')
         {
           this.fxGainNode.gain.value = 1-y;
           this.player.playbackRate.value = 1.0 + x;
