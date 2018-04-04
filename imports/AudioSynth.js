@@ -124,20 +124,25 @@ const synths = {
   pad: {
       create(instance) {
 
-          var lfo=new Tone.LFO(0.5,400,600);
+          instance.lfo=new Tone.LFO(0.5,400,800);
                 instance.filter=new Tone.Filter({
                   'frequency':500,
-                  'Q':10
+                  'Q':20
                 }
                 );
-         lfo.connect(instance.filter.frequency);
+         instance.lfo.connect(instance.filter.frequency);
+         instance.pitchEffect = new Tone.PitchShift();
 
 /*        instance.phaser = new Tone.Phaser ({
           "baseFrequency":200,
           "Q":1} );
 */
         instance.tremolo=new Tone.Tremolo(5, 0.75)
-        vol=new Tone.Volume(-24).chain(instance.filter,instance.tremolo);
+        chorus=new Tone.Chorus ({
+          "frequency":0.5});
+        
+
+        vol=new Tone.Volume(-24).chain(chorus,instance.filter,instance.tremolo,instance.pitchEffect);
 
 
      
@@ -167,7 +172,7 @@ const synths = {
        instance.osci.start();
 
 
-      instance.output = instance.tremolo;
+      instance.output = instance.pitchEffect;
 
 
     },
@@ -186,10 +191,15 @@ const synths = {
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-          
+            var freqb=Math.pow(10,2.2+x);
+          var freqh=Math.pow(10,2.5+x);
+          var q=Math.pow(10,-0.7+x*2);
+            this.lfo.min=freqb;
+            this.lfo.max=freqh;
+            this.filter.Q=q;
           this.osci.frequency.value = note;
  
-          this.osci2.frequency.value= Distance.transpose(note,'3m');
+          this.osci2.frequency.value= Distance.transpose(note,'3M');
           this.osci3.frequency.value= Distance.transpose(note,'5M');
 
 
@@ -203,6 +213,12 @@ const synths = {
       }
       else if (evt == 'stillPlaying')
       {
+            var freqb=Math.pow(10,2.2+x);
+          var freqh=Math.pow(10,2.5+x);
+                    var q=Math.pow(10,-0.7+x*2);
+            this.lfo.min=freqb;
+            this.lfo.max=freqh;
+            this.filter.Q=q;
 
       }
       else if (evt == 'stopPlaying')
