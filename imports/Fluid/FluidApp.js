@@ -45,8 +45,8 @@ export default class FluidApp
         this.id = iAppID;
     }
 
-    handleEvents( x, y, color, eventType )
+    handleEvents( x, y, color, eventType, iUUID )
     {
-        this.fluidSimu.handleEvents( x, y, color, eventType );
+        this.fluidSimu.handleEvents( x, y, color, eventType, iUUID );
     }
 }

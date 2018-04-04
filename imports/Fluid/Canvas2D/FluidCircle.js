@@ -12,6 +12,7 @@ class Circle extends FluidShape
         this.radius = iRadius || CIRCLE_DEFAULT_SIZE;
         this.center     = {x:0.0,y:0.0};
         this.fillColor  = iFillColor || FILL_COLOR_CIRCLE; //L'intérieur du cercle
+        this.isAnimated = true;
     }
 
     draw( iContext )
@@ -26,8 +27,17 @@ class Circle extends FluidShape
         iContext.fill();
     }
 
+    destroy()
+    {
+        this.radius = -100;
+    }
+
     animate()
     {
+        if ( !this.isAnimated )
+        {
+            return;
+        }
         this.radius -= 10;
     }
 
