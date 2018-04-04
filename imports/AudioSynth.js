@@ -124,18 +124,25 @@ const synths = {
   pad: {
       create(instance) {
 
-          var lfo=new Tone.LFO(4,400,700);
+          var lfo=new Tone.LFO(0.5,400,600);
                 instance.filter=new Tone.Filter({
-                  'frequency':600
+                  'frequency':500,
+                  'Q':10
                 }
                 );
          lfo.connect(instance.filter.frequency);
-         var vol=new Tone.Volume ( -12).connect(instance.filter);
+
+/*        instance.phaser = new Tone.Phaser ({
+          "baseFrequency":200,
+          "Q":1} );
+*/
+        instance.tremolo=new Tone.Tremolo(5, 0.75)
+        vol=new Tone.Volume(-24).chain(instance.filter,instance.tremolo);
 
 
      
         instance.enve =new Tone.AmplitudeEnvelope({
-              "attack": 5,
+              "attack": 10,
               "decay": 1,
               "sustain": 1,
               "release": 3
@@ -160,7 +167,7 @@ const synths = {
        instance.osci.start();
 
 
-      instance.output = instance.filter;
+      instance.output = instance.tremolo;
 
 
     },
