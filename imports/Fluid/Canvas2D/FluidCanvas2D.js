@@ -48,9 +48,9 @@ Canvas2D.prototype.addRandomShape = function ( iCenterX, iCenterY, iColor )
     }
 };
 
-Canvas2D.prototype.addCircle = function ( iCenterX, iCenterY, iColor )
+Canvas2D.prototype.addCircle = function ( iCenterX, iCenterY, iColor, iRadius )
 {
-    var circle = new Circle();
+    var circle = new Circle(iRadius);
     circle.fillColor = iColor;
     circle.center.x = iCenterX;
     circle.center.y = iCenterY;

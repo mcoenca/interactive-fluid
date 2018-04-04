@@ -259,9 +259,9 @@ export default class NewFluid extends BaseFluid
         this.pressure   = CreateDoubleFBO(gl, 6, this.textureWidth, this.textureHeight, this.r.internalFormat, this.r.format, this.texType, gl.NEAREST);
     }
 
-    _onEventClick( x, y, color )
+    _onEventClick( x, y, color, iUUID )
     {
-        let cPointer = _GetCreatePointers(color);
+        let cPointer = _GetCreatePointers(iUUID);
         let rgb = hexToRGB(color);
         let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
         cPointer.down = true;
@@ -273,18 +273,23 @@ export default class NewFluid extends BaseFluid
         cPointer.color = colorRGB;
     }
 
-    _onEventStart(x, y, color )
+    _onEventStart(x, y, color, iUUID )
     {
-        let cPointer = _GetCreatePointers(color);
+        let cPointer = _GetCreatePointers(iUUID);
         let rgb = hexToRGB(color);
         let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
         cPointer.down = true;
+        cPointer.moved = cPointer.down;
+        cPointer.dx = 10.0;
+        cPointer.dy = 10.0;
+        cPointer.y  = y;
+        cPointer.x  = x;
         cPointer.color = colorRGB;
     }
 
-    _onEventMove( x, y, color )
+    _onEventMove( x, y, color, iUUID )
     {
-        let cPointer = _GetCreatePointers(color);
+        let cPointer = _GetCreatePointers(iUUID);
         cPointer.moved = cPointer.down;
         cPointer.dx = (x - cPointer.x) * 10.0;
         cPointer.dy = (y - cPointer.y) * 10.0;
@@ -292,16 +297,16 @@ export default class NewFluid extends BaseFluid
         cPointer.y = y;
     }
 
-    _onEventEnd( x, y, color )
+    _onEventEnd( x, y, color, iUUID )
     {
-        let cPointer = _GetCreatePointers(color);
+        let cPointer = _GetCreatePointers(iUUID);
         cPointer.down = false;
         cPointer.moved = cPointer.down;
         cPointer.dx = 0;
         cPointer.dy = 0;
         cPointer.x = 0;
         cPointer.y = 0;
-        delete colorPointerCache[color];
+        delete colorPointerCache[iUUID];
     }
 
     _onMouseMove(e)

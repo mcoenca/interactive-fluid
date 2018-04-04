@@ -5,11 +5,13 @@ import { default as ShaderCompiler }    from '../ShaderHelpers/ShaderCompiler.js
 import { GetWebGLContext}               from "../ShaderHelpers/WebGL.js";
 import * as SHADERS                     from './Shaders.js'
 import FluidLine                        from "../Canvas2D/FluidLine";
+import {Circle}                         from "../Canvas2D/FluidCircle";
 
 let gl  = null;
 let ext = null;
 
 let gShapeCache = {};
+let gCircleCache = {};
 
 export default class OriginalFluid extends BaseFluid
 {
@@ -284,29 +286,50 @@ export default class OriginalFluid extends BaseFluid
         return super.update.call(this);
     }
 
-    _onEventStart( x, y, color )
+    _onEventStart( x, y, color, iUUID )
     {
-        let shape = _GetCreateShapeForColor( color );
+        let shape = _GetCreateShapeForColor( iUUID );
+        let circle = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).circle;
         this.canvas2D.shapeA.push( shape );
+        this.canvas2D.shapeA.push( circle );
         shape.points.push( {x: x, y:y } );
         shape.fillColor = color;
+
+        circle.center = {x: x, y:y };
+        circle.radius = 5;
+        circle.fillColor = color;
+        circle.isAnimated = false;
     }
 
-    _onEventMove( x, y, color )
+    _onEventMove( x, y, color, iUUID )
     {
-        let shape = _GetCreateShapeForColor( color );
-        shape.points.push( {x: x, y:y } );
-        shape.fillColor = color;
+        let shape = _GetCreateShapeForColor( iUUID );
+        let circle = _GetCreateCircleInitPosForUUID( iUUID ).circle;
+        let initPos = _GetCreateCircleInitPosForUUID( iUUID ).pos;
+        if ( Math.abs( initPos.x - x ) > 10 || Math.abs( initPos.y -y ) > 10 )
+        {
+            shape.points.push( {x: x, y:y } );
+            shape.fillColor = color;
+            circle.isAnimated = true;
+        }
+        else
+        {
+            console.log("Incrementing circle" );
+            circle.radius += 3;
+        }
     }
 
-    _onEventEnd( x, y, color )
+    _onEventEnd( x, y, color, iUUID )
     {
-        let shape = _GetCreateShapeForColor( color );
+        let shape = _GetCreateShapeForColor( iUUID );
+        let circle = _GetCreateCircleInitPosForUUID( iUUID ).circle;
+        circle.isAnimated = true;
         shape.destroy();
-        delete gShapeCache[color];
+        delete gShapeCache[iUUID];
+        delete gCircleCache[iUUID];
     }
 
-    _onEventClick( x, y, color )
+    _onEventClick( x, y, color, iUUID )
     {
         if ( !this.canvas2D )
         {
@@ -364,6 +387,15 @@ let _GetCreateShapeForColor = function( color )
         gShapeCache[color] = new FluidLine()
     }
     return gShapeCache[color];
+};
+
+let _GetCreateCircleInitPosForUUID = function ( uuid, iInitPos )
+{
+    if ( !gCircleCache[uuid] )
+    {
+        gCircleCache[uuid] = { circle: new Circle(), pos: iInitPos }
+    }
+    return gCircleCache[uuid];
 };
 
 function makeTexture(gl){
