@@ -279,6 +279,11 @@ export default class NewFluid extends BaseFluid
         let rgb = hexToRGB(color);
         let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
         cPointer.down = true;
+        cPointer.moved = cPointer.down;
+        cPointer.dx = 10.0;
+        cPointer.dy = 10.0;
+        cPointer.y  = y;
+        cPointer.x  = x;
         cPointer.color = colorRGB;
     }
 

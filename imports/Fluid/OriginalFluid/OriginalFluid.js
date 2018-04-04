@@ -290,6 +290,7 @@ export default class OriginalFluid extends BaseFluid
         this.canvas2D.shapeA.push( shape );
         shape.points.push( {x: x, y:y } );
         shape.fillColor = color;
+        this.canvas2D.addCircle( x, y, color, 10 );
     }
 
     _onEventMove( x, y, color )
