@@ -48,7 +48,7 @@ const palettes = [
     colorCode: '#87B2E8',
     id: 7,
     voice: 'synth',
-    sound: '007',
+    sound: 'pad',
     quantize: 8
   }, {
     color: 'purple',

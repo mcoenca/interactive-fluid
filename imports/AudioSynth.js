@@ -1,6 +1,8 @@
 import Tone from 'tone';
+import Distance from 'tonal';
 
 let minorScale = ["A1", "B1", "C2", "D2", "E2", "F2", "G2", "A2"];
+
 
 const synths = {
   bass: {
@@ -118,6 +120,91 @@ const synths = {
         this.synth.triggerRelease();
       }
     }
+  },
+  pad: {
+      create(instance) {
+
+          var lfo=new Tone.LFO(4,400,700);
+                instance.filter=new Tone.Filter({
+                  'frequency':600
+                }
+                );
+         lfo.connect(instance.filter.frequency);
+         var vol=new Tone.Volume ( -12).connect(instance.filter);
+
+
+     
+        instance.enve =new Tone.AmplitudeEnvelope({
+              "attack": 5,
+              "decay": 1,
+              "sustain": 1,
+              "release": 3
+          }).connect(vol);
+
+       instance.osci2=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency":"G#3"
+       }).connect(instance.enve)
+       instance.osci2.start();
+
+
+        instance.osci3=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency":"C4"
+       }).connect(instance.enve)
+       instance.osci3.start();
+
+       instance.osci=new Tone.OmniOscillator({
+        "type":"sawtooth"
+       }).connect(instance.enve)
+       instance.osci.start();
+
+
+      instance.output = instance.filter;
+
+
+    },
+      touchEvent(evt, x, y) {
+      if (evt == 'startPlaying')
+      {
+        //console.log('click');
+        this.fxGainNode.gain.value = 1-y;
+        var ind=Math.floor(x*minorScale.length);
+
+
+
+        var note = Distance.transpose(minorScale[Math.floor(x*minorScale.length)],'8P');
+        
+        if (this.quantize != 0)
+        {
+          var numQuants = this.audioCtx.currentTime * this.quantize;
+          var playTime = (Math.floor(numQuants) + 1) / this.quantize;
+          
+          this.osci.frequency.value = note;
+ 
+          this.osci2.frequency.value= Distance.transpose(note,'3m');
+          this.osci3.frequency.value= Distance.transpose(note,'5M');
+
+
+          this.enve.triggerAttack();
+        }
+        else
+        {
+          this.enve.triggerAttack(0);
+
+        }
+      }
+      else if (evt == 'stillPlaying')
+      {
+
+      }
+      else if (evt == 'stopPlaying')
+      {
+        this.enve.triggerRelease();
+      }
+    }
+
+
   }
 };
 
