@@ -75,7 +75,6 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
   // create initial window dimensions
   // WIDTH = window.innerWidth;
   // HEIGHT = window.innerHeight;
-
   if (initKickLoop) {
     initLoop();
   }

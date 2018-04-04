@@ -9,6 +9,50 @@ const synths = {
     create(instance) {
       instance.synth = new Tone.Synth();
       instance.output = instance.synth;
+
+      
+
+        instance.filter=new Tone.Filter({
+               'frequency':100,
+               'Q':10,
+                'rolloff':-12
+                });
+        vol=new Tone.Volume(-24).chain(instance.filter);
+        instance.lfo=new Tone.LFO(2,100,400);
+        instance.lfo.connect(instance.filter.frequency);
+
+
+        instance.enve =new Tone.AmplitudeEnvelope({
+              "attack": 0.005,
+              "decay": 0.1,
+              "sustain": 0.3,
+              "release": 0.5
+          }).connect(vol);
+
+       instance.osci2=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "detune":15
+       }).connect(instance.enve)
+       instance.osci2.start();
+
+
+        instance.osci3=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "detune":-15
+       }).connect(instance.enve)
+       instance.osci3.start();
+
+       instance.osci=new Tone.OmniOscillator({
+        "type":"sine"
+       }).connect(instance.enve)
+       instance.osci.start();
+
+
+      instance.output = instance.filter;
+
+
+
+
     },
     touchEvent(evt, x,y) {
       if (evt == 'startPlaying')
@@ -21,7 +65,11 @@ const synths = {
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-          this.synth.triggerAttack(note, playTime);
+          this.osci.frequency.value = note;
+          this.osci2.frequency.value = note;
+          this.osci3.frequency.value = note;
+          this.enve.triggerAttack();
+          //this.synth.triggerAttack(note, playTime);
         }
         else
         {
@@ -34,7 +82,9 @@ const synths = {
       }
       else if (evt == 'stopPlaying')
       {
-        this.synth.triggerRelease();
+        //this.synth.triggerRelease();
+        this.enve.triggerRelease();
+
       }
     }
   }, 

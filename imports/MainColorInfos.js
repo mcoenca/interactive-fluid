@@ -55,7 +55,7 @@ const palettes = [
     colorCode: '#6c1ae8',
     id: 8,
     voice: 'synth',
-    sound: '008',
+    sound: 'bass',
     quantize: 8
   }, {
     color: 'orange',
