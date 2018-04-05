@@ -146,7 +146,7 @@ const synths = {
 
         if (this.quantize != 0)
         {
-          var numQuants = this.audioCtx.currentTime * this.quantize;
+          var nufmQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
           this.synth.triggerAttack('C3', playTime);
         }
@@ -286,18 +286,20 @@ const synths = {
       if (evt == 'startPlaying')
       {
         //console.log('click');
-        this.fxGainNode.gain.value = 1-y;
-        var note = minorScale[Math.floor(x*minorScale.length)];
+        this.fxGainNode.gain.value = 0.7-y /2;
+        this.masterGainNode.gain.value = 0.2 + y /2
+        const baseNote = Math.floor(x*(minorScale.length - 2));
+        this.notes = [minorScale[baseNote], minorScale[baseNote + 1], minorScale[baseNote + 2]];
         
         if (this.quantize != 0)
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-          this.synth.triggerAttack(note, playTime);
+          this.synth.triggerAttack(this.notes, playTime);
         }
         else
         {
-          this.synth.triggerAttack(note, 0);
+          this.synth.triggerAttack(this.notes, 0);
         }
       }
       else if (evt == 'stillPlaying')
@@ -306,7 +308,9 @@ const synths = {
       }
       else if (evt == 'stopPlaying')
       {
-        this.synth.triggerRelease();
+        // const baseNote = Math.floor(x*(minorScale.length - 2));
+        // const notes = [minorScale[baseNote], minorScale[baseNote + 1], minorScale[baseNote + 2]];
+        this.synth.triggerRelease(this.notes);
       }
     }
   },

@@ -83,7 +83,7 @@ const palettes = [
         lineVibratoType: 'random',
         lineMaxPointsNumber: 5
     }
-  },, {
+  }, {
     color: 'brown',
     colorCode: 'brown',
     id : 11,
@@ -92,7 +92,7 @@ const palettes = [
     quantize: 8,
     fluidParams: {
         lineVibratoType: 'random',
-        lineMaxPointsNumber: 3
+        lineMaxPointsNumber: 6
     }
   }]
 }

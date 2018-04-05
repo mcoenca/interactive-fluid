@@ -330,9 +330,9 @@ export default class OriginalFluid extends BaseFluid
 
         const lineMaxPoints = fluidControl.lineMaxPointsNumber;
 
-        const isStayingAtStartPoint = Math.abs( initPos.x - x )  <= 10 || Math.abs( initPos.y -y ) <= 10;
+        const isStayingAtStartPoint = initPos && (Math.abs( initPos.x - x )  <= 10 || Math.abs( initPos.y -y ) <= 10);
 
-        const isStayingAtLastPoint = Math.abs( lastShapePoint.x - x )  <= 2 || Math.abs( lastShapePoint.y -y ) <= 2;
+        const isStayingAtLastPoint = lastShapePoint && (Math.abs( lastShapePoint.x - x )  <= 2 || Math.abs( lastShapePoint.y -y ) <= 2);
         
         if (!isStayingAtLastPoint)
         {
