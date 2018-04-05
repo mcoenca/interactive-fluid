@@ -166,6 +166,10 @@ export default class NewFluid extends BaseFluid
 
     _splat(x, y, dx, dy, color)
     {
+        if ( x < 0 || y < 0 || !x ||! y )
+        {
+            return;
+        }
         const blit = (() => {
             gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
@@ -287,14 +291,22 @@ export default class NewFluid extends BaseFluid
         cPointer.color = colorRGB;
     }
 
+
     _onEventMove( x, y, color, iUUID )
     {
         let cPointer = _GetCreatePointers(iUUID);
-        cPointer.moved = cPointer.down;
+        if ( Math.abs( cPointer.x - x ) < 10 && Math.abs( cPointer.y -y ) < 10 )
+        {
+            return;
+        }
+        cPointer.moved = true;
         cPointer.dx = (x - cPointer.x) * 10.0;
         cPointer.dy = (y - cPointer.y) * 10.0;
         cPointer.x = x;
-        cPointer.y = y;
+        cPointer.y = y;        console.log( pointers.length );
+
+
+
     }
 
     _onEventEnd( x, y, color, iUUID )
@@ -306,8 +318,17 @@ export default class NewFluid extends BaseFluid
         cPointer.dy = 0;
         cPointer.x = 0;
         cPointer.y = 0;
-        delete colorPointerCache[iUUID];
+
+        this._deletePointer( iUUID );
     }
+
+    _deletePointer = function ( iUUID )
+    {
+        let cPointer = _GetCreatePointers(iUUID);
+        let index = pointers.indexOf( cPointer );
+        pointers.splice( index, 1 );
+        delete colorPointerCache[iUUID];
+    };
 
     _onButtonClick(e)
     {
