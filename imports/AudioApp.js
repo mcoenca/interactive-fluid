@@ -53,9 +53,15 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
   // audio setup
   // 
   fxNode = new Tone.Gain();
+  postFxNode = new Tone.Gain();
   outputNode = new Tone.Gain();
+
+  outputNode.gain.value = 0.5;
+  postFxNode.gain.value = 0.5;
+
   outputNode.toMaster();
-  fxNode.toMaster();
+  postFxNode.toMaster();
+
   // outputNode.gain.value = 1.0;
   /*fxConvolver = new tuna.Convolver({
       highCut: 20000,                         //20 to 22050
@@ -68,37 +74,44 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
     });*/
   let url = `${soundsRootUrl}/impulse/033.wav`;
   console.log(url);
-  fxConvolver = new Tone.Convolver(url, () => console.log('ir loaded')).toMaster();
+  fxMasterEffect = new Tone.Convolver(url, () => console.log('ir loaded'));
 
-  fxNode.gain.value = 0.5;
-  fxNode.connect(fxConvolver);
-  kickPlayer = createUser(
-    {
-      voice: 'sampler',
-      sound: '001',
-      quantize: 1
-    }
-  );
-  bassPlayer = createUser(
-    {
-      voice: 'synth',
-      sound: 'bass',
-      quantize: 1
-    }
-  );
+  fxMasterEffect = new Tone.Freeverb (0.9, 1000);
+
+  fxMasterEffect.connect(postFxNode);
+
+  fxNode.gain.value = 0.4;
+  fxNode.connect(fxMasterEffect);
 
   const initLoop = () => {
+    kickPlayer = createUser(
+      {
+        voice: 'sampler',
+        sound: '001',
+        quantize: 1
+      }
+    );
+    // kickPlayer.fxGainNode.value = 0.7;
+    kickPlayer.sampler.masterGainNode.gain.value = 0;
+    bassPlayer = createUser(
+      {
+        voice: 'synth',
+        sound: 'bass',
+        quantize: 1
+      }
+    );
+
     setInterval(function(){
-    kickPlayer.sampler.touchEvent('start', 0, 0.9);
+
+    kickPlayer.sampler.touchEvent('startPlaying', 0, 0.8);
     if (beatCount % 16 == 0) {
-      bassPlayer.sampler.touchEvent('start', 0.99, 0.8);}
+      bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);}
     else if (beatCount % 16 == 8){
-      bassPlayer.sampler.touchEvent('start', 0.7, 0.8);}
+      bassPlayer.sampler.touchEvent('startPlaying', 0.7, 0.8);}
     beatCount = (beatCount+1) % 16;
     }, 1000);
   };
 
-  
   // create initial window dimensions
   // WIDTH = window.innerWidth;
   // HEIGHT = window.innerHeight;

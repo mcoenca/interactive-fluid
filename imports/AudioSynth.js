@@ -49,10 +49,6 @@ const synths = {
 
 
       instance.output = instance.filter;
-
-
-
-
     },
     touchEvent(evt, x,y) {
       if (evt == 'startPlaying')
@@ -127,19 +123,25 @@ const synths = {
   },
   tremoloTriangle: {
     create(instance) {
+
       instance.pitchEffect = new Tone.PitchShift();
       instance.pitchEffect.windowSize = 0.1;
 
       instance.tremolo = new Tone.Tremolo(2, 0).connect(instance.pitchEffect).start();
       instance.tremolo.spread = 180;
 
-      instance.synth = new Tone.Synth().connect(instance.tremolo);
+      vol=new Tone.Volume(-10).chain(instance.tremolo,instance.pitchEffect);
+
+      instance.synth = new Tone.Synth().connect(vol);
+
+
+
       instance.output = instance.pitchEffect;
       //return instance.pitchEffect;
     },
 
     touchEvent(evt, x, y) {
-      const scale = 36;
+      const scale = 24;
 
       if (evt == 'startPlaying')
       {
@@ -149,11 +151,11 @@ const synths = {
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-          this.synth.triggerAttack('C2', playTime);
+          this.synth.triggerAttack('C3', playTime);
         }
         else
         {
-          this.synth.triggerAttack('C2', 0);
+          this.synth.triggerAttack('C3', 0);
         }
       }
       else if (evt == 'stillPlaying')
@@ -192,15 +194,15 @@ const synths = {
           "frequency":0.5});
         
 
-        vol=new Tone.Volume(-24).chain(chorus,instance.filter,instance.tremolo,instance.pitchEffect);
+        vol=new Tone.Volume(-34).chain(chorus,instance.filter,instance.tremolo,instance.pitchEffect);
 
 
      
         instance.enve =new Tone.AmplitudeEnvelope({
-              "attack": 10,
+              "attack": 2,
               "decay": 1,
               "sustain": 1,
-              "release": 3
+              "release": 2
           }).connect(vol);
 
        instance.osci2=new Tone.OmniOscillator({
@@ -227,10 +229,11 @@ const synths = {
 
     },
       touchEvent(evt, x, y) {
+
       if (evt == 'startPlaying')
       {
         //console.log('click');
-        this.fxGainNode.gain.value = 1-y;
+        this.fxGainNode.gain.rampTo(1-y, 0.1);
         var ind=Math.floor(x*minorScale.length);
 
 
@@ -241,11 +244,11 @@ const synths = {
         {
           var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
-            var freqb=Math.pow(10,2.2+x);
+          var freqb=Math.pow(10,2.2+x);
           var freqh=Math.pow(10,2.5+x);
           var q=Math.pow(10,-0.7+x*2);
-            this.lfo.min=freqb;
-            this.lfo.max=freqh;
+          this.lfo.min=freqb;
+          this.lfo.max=freqh;
             this.filter.Q=q;
           this.osci.frequency.value = note;
  
@@ -298,6 +301,10 @@ class AudioSynth {
     this.fxGainNode = new Tone.Gain();
     this.masterGainNode = new Tone.Gain();
 
+    this.fxGainNode.gain.value = 0.7;
+    this.masterGainNode.gain.value = 0.7;
+
+
     this.masterGainNode.connect(outputNode);
     this.fxGainNode.connect(fxNode);
 
@@ -308,7 +315,7 @@ class AudioSynth {
 
     this.output.connect(this.masterGainNode);
     this.output.connect(this.fxGainNode);
-    //this.synth.toMaster();
+    // this.synth.toMaster();
 
     this.touchEvent = synthInfo.touchEvent.bind(this);
   }

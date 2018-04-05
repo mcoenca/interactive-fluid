@@ -23,7 +23,7 @@ import { initAudio, createUser } from '/imports/AudioApp.js';
 
 import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.js';
 
-// change simulation
+// change simulation ORIGINAL_APP / NEW_APP
 let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
 
 // switch back to old audio system (colorInfos)
@@ -31,6 +31,8 @@ const USE_STREAM_COLOR = true;
 
 // Enable kick and bass base loop
 const ENABLE_KICK_LOOP = true;
+
+const DEBUG = false;
 
 // === FLUID PAGE
 const loadUser = (userColor) => (_.extend({
@@ -55,14 +57,16 @@ Template.fluid.onCreated(function fluidOnCreated() {
     const width = $(window).width();
     const height = $(window).height();
 
-    const { colorCode, voice } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+    const { colorCode, voice, fluidParams } = _.find(colorInfos, colorInfo => colorInfo.color === color);
 
     const goodEventType = voice === 'sampler' ? 'tap' : eventType;
+
+    const fluidControl = fluidParams;
 
     x = xPc * width;
     y = yPc * height;
 
-    this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid );
+    this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid, fluidControl );
   }
 
   const handleStreamEvent = (streamEvent) => {
@@ -74,7 +78,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
       yPc
     } = streamEvent;  
 
-    console.log(streamEvent);
+    if (DEBUG) console.log(streamEvent);
 
     let user = this.users[uuid];
 
@@ -93,7 +97,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
   }
 
   streamChannel.subscribe('streamEvents', ({data: streamEvent}) => {
-    console.log('stream event received');
+    if (DEBUG) console.log('stream event received');
     handleStreamEvent(streamEvent);
   })
 });
