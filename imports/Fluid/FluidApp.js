@@ -49,4 +49,8 @@ export default class FluidApp
     {
         this.fluidSimu.handleEvents( x, y, color, eventType, iUUID, fluidControl );
     }
+
+    setBackgroundColor ( red, green, blue ) {
+        if (this.fluidSimu.setBackgroundColor) this.fluidSimu.setBackgroundColor(red, green, blue);
+    }
 }

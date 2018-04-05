@@ -51,4 +51,4 @@ export function hexToRGB(hex, options = 'array') {
         {red, green, blue, alpha};
 };
 
-export default {perc2color};
+export default {perc2color, hexToRGB};

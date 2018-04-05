@@ -364,6 +364,27 @@ const synths = {
         this.env.triggerRelease();
       }
     }
+  },
+  fm: {
+    create(instance) {
+      const gain = new Tone.Gain(0.1);
+      const fmSynth = new Tone.FMSynth().connect(gain);
+
+      instance.synth = fmSynth;
+      instance.output = gain;
+    },
+    onNoteOn(noteAndOctave) {
+      this.synth.triggerAttack(noteAndOctave);
+    },
+    onNoteOff(noteAndOctave) {
+      this.synth.triggerRelease();
+    },
+    touchEvent(evt, x, y) {
+      if (evt === 'stillPlaying') {
+        if (x) this.synth.detune.value = Math.floor(x * 10);
+        if (y) this.synth.modulationIndex.value = 5 + 100 * y;
+      }
+    }
   }
 };
 
@@ -401,6 +422,8 @@ class AudioSynth {
     // this.synth.toMaster();
 
     this.touchEvent = synthInfo.touchEvent.bind(this);
+    this.onNoteOn = synthInfo.onNoteOn ? synthInfo.onNoteOn.bind(this) : () => {};
+    this.onNoteOff = synthInfo.onNoteOff ? synthInfo.onNoteOff.bind(this) : () => {};
   }
 };
 

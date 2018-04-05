@@ -1,6 +1,8 @@
+import Tone from 'tone';
+
 import { AudioSampler } from '/imports/AudioSampler.js';
 import { AudioSynth } from '/imports/AudioSynth.js';
-import Tone from 'tone';
+import { enableMidi, WebMidiControl } from '/imports/AudioMidi.js';
 
 let audioCtx;
 let tuna;
@@ -10,9 +12,9 @@ let outputNode;
 let fxNode;
 let kickPlayer;
 let bassPlayer;
-// let WIDTH;
-// let HEIGHT;
 let beatCount = 0;
+let midiInput = null;
+
 const handleEvent = (user) => ({eventType, xPc, yPc}) => {
   user.touchEvent(eventType, xPc, yPc);
 }
@@ -37,11 +39,15 @@ export const createUser = function(userStruct) {
 
   return {
     sampler : user,
-    handleEvent : handleEvent(user)
+    handleEvent : handleEvent(user),
+    onNoteOn: user.onNoteOn,
+    onNoteOff: user.onNoteOff,
   };
 }
 
-export const initAudio = function (soundsRoot, initKickLoop = true) {
+export const initAudio = function (soundsRoot, initLoop = true, {
+  onMidiNotePlayed = () =>{}
+} = {}) {
   // create web audio api context
   audioCtx = Tone.context;
   //tuna = new Tuna(audioCtx);
@@ -83,7 +89,9 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
   fxNode.gain.value = 0.4;
   fxNode.connect(fxMasterEffect);
 
-  const initLoop = () => {
+
+
+  const initKickLoop = () => {
     kickPlayer = createUser(
       {
         voice: 'sampler',
@@ -102,62 +110,45 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
     );
 
     setInterval(function(){
-
     kickPlayer.sampler.touchEvent('startPlaying', 0, 0.8);
     if (beatCount % 16 == 0) {
-      // note
-      
       bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);
     } else if (beatCount % 16 == 8){
-      // 
       bassPlayer.sampler.touchEvent('startPlaying', 0.7, 0.8);}
     beatCount = (beatCount+1) % 16;
     }, 1000);
   };
 
-  // create initial window dimensions
-  // WIDTH = window.innerWidth;
-  // HEIGHT = window.innerHeight;
-  if (initKickLoop) {
-    initLoop();
+  if (initLoop) {
+    initKickLoop();
   }
+
+  enableMidi(() => {
+    midiInput = new WebMidiControl('USB Keystation 49e');
+    if (midiInput.input) {
+      const midiUser = createUser({
+        voice: 'synth',
+        sound: 'fm',
+      });
+
+      midiInput.addValueListener('pitchbend', (value) => {
+        midiUser.handleEvent({
+          eventType: 'stillPlaying', 
+          xPc: value, 
+          yPc: null
+        });
+      });
+
+      midiInput.addNoteListener('noteon', (noteAndOctave, number) => {
+        midiUser.onNoteOn(noteAndOctave);
+        onMidiNotePlayed(noteAndOctave, number);
+      });
+
+      midiInput.addNoteListener('noteoff', (noteAndOctave, number) => {
+        midiUser.onNoteOff();
+      });
+    }
+  });
 }
 
-// const random = function(number1,number2) {
-//   var randomNo = number1 + (Math.floor(Math.random() * (number2 - number1)) + 1);
-//   return randomNo;
-// }
-
-
-// const sendClick = function (e) {
-//     const curX = (window.Event) ? e.pageX : event.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-    
-//     const curY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-    
-//     user1.touchEvent(true, CurX/WIDTH, CurY/HEIGHT);
-// }
-
-// const simpleSendClick = (sampler) => (e) => {
-//   sampler.touchEvent(e.evt, e.clientX/WIDTH, e.clientY/HEIGHT);
-// }
-
-
-
-// canvas
-/*
-var canvas = document.querySelector('.canvas');
-canvas.width = WIDTH;
-canvas.height = HEIGHT;
-
-var canvasCtx = canvas.getContext('2d');
-*/
-// Get new mouse pointer coordinates when mouse is moved
-// then send the values to the users
-
-
-
-
-
-// activate for whole screen
-// document.onmousedown = sendClick;
 export default { initAudio, createUser };

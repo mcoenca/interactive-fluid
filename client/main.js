@@ -12,7 +12,7 @@ import Tone from 'tone';
 import './main.css';
 import '/imports/routes.js';
 
-import {perc2color} from '/imports/utils.js';
+import {perc2color, hexToRGB} from '/imports/utils.js';
 
 // Libs
 import {streamChannel } from '/imports/MainStream.js';
@@ -21,8 +21,6 @@ import { default as FluidApp } from '/imports/Fluid/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
 
-import { initUsbKeyStationMidi, setKeyStationNoteHook } from '/imports/MidiApp.js';
-
 // change simulation ORIGINAL_APP / NEW_APP
 let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
 
@@ -30,7 +28,7 @@ let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
 const USE_STREAM_COLOR = true;
 
 // Enable kick and bass base loop
-const ENABLE_KICK_LOOP = true;
+const ENABLE_KICK_LOOP = false;
 
 const DEBUG = false;
 
@@ -104,30 +102,29 @@ Template.fluid.onCreated(function fluidOnCreated() {
 
 
 Template.fluid.onRendered(function fluidOnRendered() {
+  const onNoteHook = (noteAndOctave, number) => {
+    const totalNotes = 120;
+    const hexColor = perc2color(100 * number / totalNotes);
+    const {red, green, blue} = hexToRGB(hexColor);
+    console.log(number);
+    console.log(hexColor);
+    console.log(red, green, blue);
+    this.fluidApp.setBackgroundColor(red/255, green/255, blue/255);
+    this.backgroundColor.set(hexColor);
+  };
+
   ///////////////////
   // LOADING AUDIO //
   ///////////////////
-  initAudio('sounds', ENABLE_KICK_LOOP);
+  initAudio('sounds', ENABLE_KICK_LOOP, {
+    onMidiNotePlayed: onNoteHook,
+  });
 
   ///////////////////
   // LOADING FLUID //
   ///////////////////
   this.fluidApp.init();
   this.fluidApp.run( CURRENT_FLUID_APP );
-
-
-  //////////////////
-  // LOADING MIDI //
-  //////////////////
-  const onNoteHook = (note) => {
-    const {note : {name, number, octave}} = note;
-    const totalNotes = 120;
-
-    this.backgroundColor.set(perc2color(100 * number / totalNotes));
-  };
-
-  setKeyStationNoteHook(onNoteHook);
-  initUsbKeyStationMidi();
 });
 
 Template.fluid.helpers({
