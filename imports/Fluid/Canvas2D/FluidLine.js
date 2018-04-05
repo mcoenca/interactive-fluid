@@ -90,8 +90,6 @@ export default class FluidLine extends FluidShape
 
         const pc = ((x / MAX_WIDTH) + (MAX_HEIGHT - y) / MAX_HEIGHT) / 2;
 
-        console.log(pc);
-
         if (pc > 0.1){
             this._setVibrato( pc * MAX_VIBRATO_AMP, lineVibratoType); 
         } else {

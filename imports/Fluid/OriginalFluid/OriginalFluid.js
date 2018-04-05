@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import {Canvas2D}                       from '../Canvas2D/FluidCanvas2D.js';
 import { default as BaseFluid }         from '../BaseFluid.js'
 import { default as GLProgram }         from '../ShaderHelpers/GlProgram.js'
@@ -320,29 +322,33 @@ export default class OriginalFluid extends BaseFluid
 
     _onEventMove( x, y, color, iUUID, fluidControl = {} )
     {
-        let shape = _GetCreateShapeForColor( iUUID );
-        let initPos = _GetCreateCircleInitPosForUUID( iUUID ).pos;
+        const shape = _GetCreateShapeForColor( iUUID );
+        const lastShapePoint= _.last(shape.points);
+        const initPos = _GetCreateCircleInitPosForUUID( iUUID ).pos;
 
         shape.changeInternalParams(x, y, fluidControl);
 
         const lineMaxPoints = fluidControl.lineMaxPointsNumber;
 
-        if ( Math.abs( initPos.x - x ) > 10 || Math.abs( initPos.y -y ) > 10 )
+        const isStayingAtStartPoint = Math.abs( initPos.x - x )  <= 10 || Math.abs( initPos.y -y ) <= 10;
+
+        const isStayingAtLastPoint = Math.abs( lastShapePoint.x - x )  <= 2 || Math.abs( lastShapePoint.y -y ) <= 2;
+        
+        if (!isStayingAtLastPoint)
         {
+            console.log(x, y);
             shape.points.push( {x: x, y:y } );
             shape.fillColor = color;
-
-            if (lineMaxPoints && shape.points.length > lineMaxPoints) {
-                console.log('removing point. Shape points length : ', shape.points.length);
-                shape.points.shift();
-            }
-        }
-        else
-        {
+        } else if (isStayingAtStartPoint) {
             console.log("Incrementing circle" );
             _GetCreateCircleInitPosForUUID( iUUID ).radius += 3;
             this._addCircle(x,y,color,iUUID);
         }
+
+        if (lineMaxPoints && shape.points.length > lineMaxPoints) {
+            console.log('removing point. Shape points length : ', shape.points.length);
+            shape.points.shift();
+        }  
     }
 
     _onEventEnd( x, y, color, iUUID, fluidControl = {} )

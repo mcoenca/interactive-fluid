@@ -77,7 +77,7 @@ const palettes = [
     quantize: 8,
     fluidParams: {
         lineVibratoType: 'random',
-        // lineMaxPointsNumber: 12
+        lineMaxPointsNumber: 5
     }
   }]
 }

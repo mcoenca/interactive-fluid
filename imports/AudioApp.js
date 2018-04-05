@@ -105,8 +105,11 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
 
     kickPlayer.sampler.touchEvent('startPlaying', 0, 0.8);
     if (beatCount % 16 == 0) {
-      bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);}
-    else if (beatCount % 16 == 8){
+      // note
+      
+      bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);
+    } else if (beatCount % 16 == 8){
+      // 
       bassPlayer.sampler.touchEvent('startPlaying', 0.7, 0.8);}
     beatCount = (beatCount+1) % 16;
     }, 1000);
