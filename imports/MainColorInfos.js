@@ -48,14 +48,14 @@ const palettes = [
     colorCode: '#87B2E8',
     id: 7,
     voice: 'synth',
-    sound: '007',
+    sound: 'pad',
     quantize: 8
   }, {
     color: 'purple',
     colorCode: '#6c1ae8',
     id: 8,
     voice: 'synth',
-    sound: '008',
+    sound: 'bass',
     quantize: 8
   }, {
     color: 'orange',

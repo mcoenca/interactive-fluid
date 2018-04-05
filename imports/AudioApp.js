@@ -13,6 +13,33 @@ let bassPlayer;
 // let WIDTH;
 // let HEIGHT;
 let beatCount = 0;
+const handleEvent = (user) => ({eventType, xPc, yPc}) => {
+  user.touchEvent(eventType, xPc, yPc);
+}
+
+export const createUser = function(userStruct) {
+  const {
+    voice,
+    sound,
+    quantize,
+  } = userStruct;
+
+  let user;
+
+  if (voice == 'sampler')
+  {
+    user = new AudioSampler(audioCtx, soundsRootUrl, outputNode, fxNode, quantize, sound);
+  }
+  else if (voice == 'synth')
+  {
+    user = new AudioSynth(audioCtx, soundsRootUrl, outputNode, fxNode, quantize, sound);
+  }
+
+  return {
+    sampler : user,
+    handleEvent : handleEvent(user)
+  };
+}
 
 export const initAudio = function (soundsRoot, initKickLoop = true) {
   // create web audio api context
@@ -75,7 +102,6 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
   // create initial window dimensions
   // WIDTH = window.innerWidth;
   // HEIGHT = window.innerHeight;
-
   if (initKickLoop) {
     initLoop();
   }
@@ -99,33 +125,7 @@ export const initAudio = function (soundsRoot, initKickLoop = true) {
 //   sampler.touchEvent(e.evt, e.clientX/WIDTH, e.clientY/HEIGHT);
 // }
 
-const handleEvent = (user) => ({eventType, xPc, yPc}) => {
-  user.touchEvent(eventType, xPc, yPc);
-}
 
-export const createUser = function(userStruct) {
-  const {
-    voice,
-    sound,
-    quantize,
-  } = userStruct;
-
-  let user;
-
-  if (voice == 'sampler')
-  {
-    user = new AudioSampler(audioCtx, soundsRootUrl, outputNode, fxNode, quantize, sound);
-  }
-  else if (voice == 'synth')
-  {
-    user = new AudioSynth(audioCtx, soundsRootUrl, outputNode, fxNode, quantize, sound);
-  }
-
-  return {
-    sampler : user,
-    handleEvent : handleEvent(user)
-  };
-}
 
 // canvas
 /*
