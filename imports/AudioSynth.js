@@ -8,26 +8,23 @@ const synths = {
   bass: {
     create(instance) {
       instance.synth = new Tone.Synth();
-      instance.output = instance.synth;
 
-      
-
-        instance.filter=new Tone.Filter({
-               'frequency':100,
-               'Q':10,
-                'rolloff':-12
-                });
-        vol=new Tone.Volume(-24).chain(instance.filter);
-        instance.lfo=new Tone.LFO(2,100,400);
-        instance.lfo.connect(instance.filter.frequency);
+      instance.filter=new Tone.Filter({
+       'frequency':100,
+       'Q':10,
+        'rolloff':-12
+        });
+      vol=new Tone.Volume(-24).chain(instance.filter);
+      instance.lfo=new Tone.LFO(2,100,400);
+      instance.lfo.connect(instance.filter.frequency);
 
 
-        instance.enve =new Tone.AmplitudeEnvelope({
-              "attack": 0.005,
-              "decay": 0.1,
-              "sustain": 0.3,
-              "release": 0.5
-          }).connect(vol);
+      instance.enve =new Tone.AmplitudeEnvelope({
+            "attack": 0.005,
+            "decay": 0.1,
+            "sustain": 0.3,
+            "release": 0.5
+        }).connect(vol);
 
        instance.osci2=new Tone.OmniOscillator({
         "type":"sawtooth",
@@ -36,7 +33,7 @@ const synths = {
        instance.osci2.start();
 
 
-        instance.osci3=new Tone.OmniOscillator({
+      instance.osci3=new Tone.OmniOscillator({
         "type":"sawtooth",
         "detune":-15
        }).connect(instance.enve)
@@ -279,8 +276,90 @@ const synths = {
         this.enve.triggerRelease();
       }
     }
+  },
+  poly: {
+    create(instance) {
+      instance.synth = new Tone.PolySynth(4, Tone.Synth);
+      instance.output = instance.synth;
+    },
+    touchEvent(evt, x, y) {
+      if (evt == 'startPlaying')
+      {
+        //console.log('click');
+        this.fxGainNode.gain.value = 1-y;
+        var note = minorScale[Math.floor(x*minorScale.length)];
+        
+        if (this.quantize != 0)
+        {
+          var numQuants = this.audioCtx.currentTime * this.quantize;
+          var playTime = (Math.floor(numQuants) + 1) / this.quantize;
+          this.synth.triggerAttack(note, playTime);
+        }
+        else
+        {
+          this.synth.triggerAttack(note, 0);
+        }
+      }
+      else if (evt == 'stillPlaying')
+      {
 
+      }
+      else if (evt == 'stopPlaying')
+      {
+        this.synth.triggerRelease();
+      }
+    }
+  },
+  noise : {
+    create(instance) {
 
+      const vol = new Tone.Gain(0.1);
+
+      instance.env = new Tone.AmplitudeEnvelope({
+        "attack": 3,
+        "decay": 1,
+        "sustain": 2,
+        "release": 5
+      }).connect(vol);
+
+      instance.filter = new Tone.AutoFilter({
+        // "frequency" : "4n", 
+        "frequency": "3Hz",
+        "min" : 800, 
+        "max" : 3000
+      }).connect(instance.env);
+
+      instance.synth = new Tone.Noise("pink");
+      instance.synth.connect(instance.filter);
+
+      instance.output = vol;
+    },
+    touchEvent(evt, x, y) {
+
+      if (evt == 'startPlaying')
+      { 
+        this.filter.start();
+        this.synth.start();
+        this.env.triggerAttack();
+      }
+      else if (evt == 'stillPlaying')
+      {
+        // const freqAmp = 800;
+        // const note = minorScale[Math.floor(x*minorScale.length)];
+        const freq = (2 + 10 *  ( 1- x) ) + "Hz";
+        this.filter.frequency.rampTo(freq, 0.1);
+
+        this.filter.depth.rampTo(1 - 0.3 * ( 1 - y) , 0.1);
+        this.filter.min = 800 + y * 3000;
+        this.filter.max = 3000 + y * 3000;
+      }
+      else if (evt == 'stopPlaying')
+      {
+        // this.output.stop();
+        // this.synth.stop();
+        this.env.triggerRelease();
+      }
+    }
   }
 };
 

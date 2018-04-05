@@ -42,7 +42,11 @@ const palettes = [
     id: 6,
     voice: 'synth',
     sound: 'noise',
-    quantize: 8
+    quantize: 8,
+    fluidParams: {
+        lineVibratoType: 'pulse',
+        lineMaxPointsNumber: 20,
+    }
   }, {
     color: 'sky',
     colorCode: '#87B2E8',
@@ -78,6 +82,17 @@ const palettes = [
     fluidParams: {
         lineVibratoType: 'random',
         lineMaxPointsNumber: 5
+    }
+  },, {
+    color: 'brown',
+    colorCode: 'brown',
+    id : 11,
+    voice: 'synth',
+    sound: 'poly',
+    quantize: 8,
+    fluidParams: {
+        lineVibratoType: 'random',
+        lineMaxPointsNumber: 3
     }
   }]
 }
