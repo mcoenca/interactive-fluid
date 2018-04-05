@@ -286,44 +286,48 @@ export default class OriginalFluid extends BaseFluid
         return super.update.call(this);
     }
 
+    _addCircle( x, y, color, iUUID )
+    {
+        let circle = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).circle;
+        let radius = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).radius;
+        this.canvas2D.shapeA.push( circle );
+
+        circle.center = {x: x, y:y };
+        circle.radius = radius;
+        circle.fillColor = color;
+    }
+
     _onEventStart( x, y, color, iUUID )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         let circle = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).circle;
         this.canvas2D.shapeA.push( shape );
-        this.canvas2D.shapeA.push( circle );
         shape.points.push( {x: x, y:y } );
         shape.fillColor = color;
+        this._addCircle(x,y,color,iUUID);
 
-        circle.center = {x: x, y:y };
-        circle.radius = 5;
-        circle.fillColor = color;
-        circle.isAnimated = false;
     }
 
     _onEventMove( x, y, color, iUUID )
     {
         let shape = _GetCreateShapeForColor( iUUID );
-        let circle = _GetCreateCircleInitPosForUUID( iUUID ).circle;
         let initPos = _GetCreateCircleInitPosForUUID( iUUID ).pos;
         if ( Math.abs( initPos.x - x ) > 10 || Math.abs( initPos.y -y ) > 10 )
         {
             shape.points.push( {x: x, y:y } );
             shape.fillColor = color;
-            circle.isAnimated = true;
         }
         else
         {
             console.log("Incrementing circle" );
-            circle.radius += 3;
+            _GetCreateCircleInitPosForUUID( iUUID ).radius += 3;
+            this._addCircle(x,y,color,iUUID);
         }
     }
 
     _onEventEnd( x, y, color, iUUID )
     {
         let shape = _GetCreateShapeForColor( iUUID );
-        let circle = _GetCreateCircleInitPosForUUID( iUUID ).circle;
-        circle.isAnimated = true;
         shape.destroy();
         delete gShapeCache[iUUID];
         delete gCircleCache[iUUID];
@@ -393,7 +397,7 @@ let _GetCreateCircleInitPosForUUID = function ( uuid, iInitPos )
 {
     if ( !gCircleCache[uuid] )
     {
-        gCircleCache[uuid] = { circle: new Circle(), pos: iInitPos }
+        gCircleCache[uuid] = { circle: new Circle(), pos: iInitPos, radius: 5 }
     }
     return gCircleCache[uuid];
 };
