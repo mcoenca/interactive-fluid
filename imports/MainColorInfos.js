@@ -3,7 +3,7 @@ const palettes = [
   name: 'classic',
   colorInfos: [{
     color: 'red',
-    colorCode: 'red',
+    colorCode: '#ff0000',
     id: 1,
     voice: 'sampler',
     sound: '001',
@@ -17,7 +17,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'blue',
-    colorCode: 'blue',
+    colorCode: '#0000ff',
     id: 3,
     voice: 'sampler',
     sound: '003',

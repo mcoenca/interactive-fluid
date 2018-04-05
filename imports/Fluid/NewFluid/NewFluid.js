@@ -309,6 +309,16 @@ export default class NewFluid extends BaseFluid
         delete colorPointerCache[iUUID];
     }
 
+    _onButtonClick(e)
+    {
+        this.setBackgroundColor( Math.random(), Math.random(), Math.random());
+    }
+
+    setBackgroundColor( iRed, iGreen, iBlue )
+    {
+        gl.uniform4f(this.displayProgram.uniforms.u_colorBackground, iRed, iGreen, iBlue, 1);
+    }
+
     _onMouseMove(e)
     {
         pointers[0].moved = pointers[0].down;

@@ -107,7 +107,6 @@ export default class OriginalFluid extends BaseFluid
 
     run()
     {
-
         gl.uniform1i( this.fluidProgram.uniforms.u_image, 0 );
         gl.uniform1i( this.fluidProgram.uniforms.u_canvas, 1 );
         gl.uniform1i( this.fluidProgram.uniforms.u_colorRed, 2 );
@@ -306,6 +305,16 @@ export default class OriginalFluid extends BaseFluid
         shape.fillColor = color;
         this._addCircle(x,y,color,iUUID);
 
+    }
+
+    _onButtonClick(e)
+    {
+        this.setBackgroundColor( Math.random(), Math.random(), Math.random());
+    }
+
+    setBackgroundColor( iRed, iGreen, iBlue )
+    {
+        gl.uniform4f(this.fluidProgram.uniforms.u_colorBackground, iRed, iGreen, iBlue, 1);
     }
 
     _onEventMove( x, y, color, iUUID )

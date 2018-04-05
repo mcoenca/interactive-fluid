@@ -22,6 +22,7 @@ export const FRAGMENT = `
     uniform sampler2D u_colorRed;
     uniform sampler2D u_colorGreen;
     uniform sampler2D u_colorBlue;
+    uniform vec4 u_colorBackground;
 
     varying vec2 v_texCoord;
     uniform vec2 u_textureSize;
@@ -71,7 +72,8 @@ export const FRAGMENT = `
                 float r = ( 49.0 * position + 56.0 ) / 255.0;
                 float g = ( 49.0 * position + 56.0 ) / 255.0;
                 float b = ( 49.0 * position + 56.0 ) / 255.0;
-                gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
+                vec4 temp = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
+                gl_FragColor = mix( temp, u_colorBackground, 0.2 );
             }
             else
             {
@@ -82,7 +84,8 @@ export const FRAGMENT = `
                 float r = ( 85.0 * position + 105.0 ) / 255.0;
                 float g = ( 85.0 * position + 105.0 ) / 255.0;
                 float b = ( 85.0 * position + 105.0 ) / 255.0;
-                gl_FragColor = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
+                vec4 temp = mix( vec4(r,g,b,1.0) , vec4( colorRedState.r, colorGreenState.r, colorBlueState.r, 1.0), 0.8 );
+                gl_FragColor = mix( temp, u_colorBackground, 0.2 );
             }
 
             return;

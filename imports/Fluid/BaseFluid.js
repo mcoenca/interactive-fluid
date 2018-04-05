@@ -128,6 +128,11 @@ export default class BaseFluid
     {
     }
 
+    _onButtonClick(e)
+    {
+
+    }
+
     _bindEvents()
     {
         this.canvas.addEventListener('mousemove', (e) => {
@@ -167,5 +172,11 @@ export default class BaseFluid
         window.addEventListener( 'onresize', (e) => {
             this.resize();
         })
+
+        //Temp should be remove
+        let button = document.getElementById("background-switch");
+        button.addEventListener('click', (e) => {
+            this._onButtonClick(e);
+        });
     }
 }

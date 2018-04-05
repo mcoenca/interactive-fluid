@@ -39,9 +39,11 @@ export const DISPLAY = `
 
     varying vec2 vUv;
     uniform sampler2D uTexture;
+    uniform vec4 u_colorBackground;
 
     void main () {
-        gl_FragColor = texture2D(uTexture, vUv);
+        vec4 temp = texture2D(uTexture, vUv);
+        gl_FragColor = mix( temp, u_colorBackground, 0.2 );
     }
 `;
 
