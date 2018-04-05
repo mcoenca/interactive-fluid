@@ -296,13 +296,14 @@ export default class OriginalFluid extends BaseFluid
         circle.fillColor = color;
     }
 
-    _onEventStart( x, y, color, iUUID )
+    _onEventStart( x, y, color, iUUID, fluidControl = {} )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         let circle = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).circle;
         this.canvas2D.shapeA.push( shape );
         shape.points.push( {x: x, y:y } );
         shape.fillColor = color;
+        shape.changeInternalParams(x, y, fluidControl);
         this._addCircle(x,y,color,iUUID);
 
     }
@@ -317,14 +318,24 @@ export default class OriginalFluid extends BaseFluid
         gl.uniform4f(this.fluidProgram.uniforms.u_colorBackground, iRed, iGreen, iBlue, 1);
     }
 
-    _onEventMove( x, y, color, iUUID )
+    _onEventMove( x, y, color, iUUID, fluidControl = {} )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         let initPos = _GetCreateCircleInitPosForUUID( iUUID ).pos;
+
+        shape.changeInternalParams(x, y, fluidControl);
+
+        const lineMaxPoints = fluidControl.lineMaxPointsNumber;
+
         if ( Math.abs( initPos.x - x ) > 10 || Math.abs( initPos.y -y ) > 10 )
         {
             shape.points.push( {x: x, y:y } );
             shape.fillColor = color;
+
+            if (lineMaxPoints && shape.points.length > lineMaxPoints) {
+                console.log('removing point. Shape points length : ', shape.points.length);
+                shape.points.shift();
+            }
         }
         else
         {
@@ -334,7 +345,7 @@ export default class OriginalFluid extends BaseFluid
         }
     }
 
-    _onEventEnd( x, y, color, iUUID )
+    _onEventEnd( x, y, color, iUUID, fluidControl = {} )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         shape.destroy();
@@ -342,7 +353,7 @@ export default class OriginalFluid extends BaseFluid
         delete gCircleCache[iUUID];
     }
 
-    _onEventClick( x, y, color, iUUID )
+    _onEventClick( x, y, color, iUUID, fluidControl = {} )
     {
         if ( !this.canvas2D )
         {

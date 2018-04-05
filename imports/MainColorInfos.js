@@ -49,7 +49,11 @@ const palettes = [
     id: 7,
     voice: 'synth',
     sound: 'pad',
-    quantize: 8
+    quantize: 8,
+    fluidParams: {
+        lineVibratoType: 'pulse',
+        lineMaxPointsNumber: 12
+    }
   }, {
     color: 'purple',
     colorCode: '#6c1ae8',
@@ -70,7 +74,11 @@ const palettes = [
     id : 10,
     voice: 'synth',
     sound: 'tremoloTriangle',
-    quantize: 8
+    quantize: 8,
+    fluidParams: {
+        lineVibratoType: 'random',
+        // lineMaxPointsNumber: 12
+    }
   }]
 }
 ];

@@ -54,23 +54,23 @@ export default class BaseFluid
     {
     }
 
-    handleEvents(x, y, color, eventType, iUUID )
+    handleEvents(x, y, color, eventType, iUUID, fluidControl = {})
     {
         if ( eventType === "startPlaying" )
         {
-            this._onEventStart( x, y, color, iUUID );
+            this._onEventStart( x, y, color, iUUID, fluidControl );
         }
         else if ( eventType === "stillPlaying" )
         {
-            this._onEventMove( x, y, color, iUUID );
+            this._onEventMove( x, y, color, iUUID, fluidControl );
         }
         else if ( eventType === "stopPlaying" )
         {
-            this._onEventEnd( x, y, color, iUUID );
+            this._onEventEnd( x, y, color, iUUID, fluidControl );
         }
         else if ( eventType === "tap" )
         {
-            this._onEventClick( x, y, color, iUUID );
+            this._onEventClick( x, y, color, iUUID, fluidControl );
         }
     }
 

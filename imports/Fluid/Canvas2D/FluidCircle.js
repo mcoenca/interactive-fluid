@@ -45,6 +45,10 @@ class Circle extends FluidShape
     {
         return this.radius > 0;
     }
+
+    changeInternalParams (x, y, fluidControl) {
+        // nothing bro hahaaaaaa
+    }
 }
 
 

@@ -2,7 +2,13 @@ import { default as FluidShape } from './FluidShape'
 import { bezierCurveThrough } from "./BezierCurvHelper";
 
 var FILL_COLOR_CIRCLE="#ff0000";
-var DEFAULT_LINE_WIDTH = 20;
+var DEFAULT_LINE_WIDTH = 12;
+var RANDOM_LINE_AMP = 5
+var RANDOM_LINE_WIDTH = true;
+var MAX_WIDTH = 1200;
+var MAX_HEIGHT = 800;
+var MAX_VIBRATO_AMP = 10;
+
 
 export default class FluidLine extends FluidShape
 {
@@ -10,9 +16,21 @@ export default class FluidLine extends FluidShape
     constructor( iWidth, iFillColor )
     {
         super();
-        this.lineWidth  = iWidth || DEFAULT_LINE_WIDTH;
+
+        if (!iWidth && RANDOM_LINE_WIDTH) {
+            this.lineWidth = Math.floor(Math.random() * RANDOM_LINE_AMP) + DEFAULT_LINE_WIDTH;
+        } else {
+            this.lineWidth  = iWidth || DEFAULT_LINE_WIDTH;
+        }
+        
         this.points     = [];
         this.fillColor  = iFillColor || FILL_COLOR_CIRCLE;
+
+        // vibrato control
+        this.vibratoAmplitude = 0;
+        this.vibratoType = 'random';
+        this.vibratoData = {};
+        this.previousiContextLineWidth = null;
     }
 
     draw( iContext )
@@ -23,7 +41,15 @@ export default class FluidLine extends FluidShape
         }
         iContext.beginPath();
         iContext.strokeStyle = this.fillColor;
-        iContext.lineWidth = this.lineWidth;
+
+        if (this.vibratoAmplitude === 0) {
+            iContext.lineWidth = this.lineWidth;
+        } else {
+            iContext.lineWidth = this._vibrateLineWidth();
+        }
+
+        this.previousiContextLineWidth = iContext.lineWidth;
+        
         bezierCurveThrough( iContext, this.points )
         // iContext.moveTo( this.points[0].x, this.points[0].y );
         // for(var i = 0; i < this.points.length-1; i ++)
@@ -56,4 +82,58 @@ export default class FluidLine extends FluidShape
     {
         return !!this.points.length;
     }
+
+    changeInternalParams( x, y, fluidControl = {}) {
+        const {
+            lineVibratoType
+        } = fluidControl;
+
+        const pc = ((x / MAX_WIDTH) + (MAX_HEIGHT - y) / MAX_HEIGHT) / 2;
+
+        console.log(pc);
+
+        if (pc > 0.1){
+            this._setVibrato( pc * MAX_VIBRATO_AMP, lineVibratoType); 
+        } else {
+            this._setVibrato(0);
+        }
+    }
+
+    _setVibrato( amplitude, type = null) {
+        if (type && type !== this.vibratoType) {
+            this.vibratoType = type;
+        }
+
+        this.vibratoAmplitude = amplitude;
+    }
+
+    _vibrateLineWidth() {
+        if (this.vibratoType === 'random') {
+            return this.lineWidth + Math.floor(Math.random() * this.vibratoAmplitude);
+        } else if (this.vibratoType === 'pulse') {
+            const min = this.lineWidth - this.vibratoAmplitude;
+            const max = this.lineWidth + this.vibratoAmplitude;
+            const growing = this.vibratoData.growing;
+            const lastWidth = this.previousiContextLineWidth;
+
+            if (growing) {
+                const nextLineWidth = lastWidth + 1;
+                if (nextLineWidth >= max) {
+                    this.vibratoData.growing = false;
+                }
+
+                return nextLineWidth;
+            } else {
+                const nextLineWidth = lastWidth - 1;
+
+                if (nextLineWidth <= min) {
+                    this.vibratoData.growing = true;
+                }
+
+                return nextLineWidth;
+            }
+        }
+    }
+
+
 }
