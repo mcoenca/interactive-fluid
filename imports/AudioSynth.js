@@ -385,6 +385,59 @@ const synths = {
         if (y) this.synth.modulationIndex.value = 5 + 100 * y;
       }
     }
+  },
+  poly2: {
+    create(instance) {
+      instance.note = 'C2';
+
+      const vol = new Tone.Volume(-36);
+
+      const filter=new Tone.Filter({
+        "frequency":1000,
+        "Q":10,
+      });
+      
+      const feedbackDelay = new Tone.FeedbackDelay("8n", 0.5);
+      
+      const chorus=new Tone.Chorus ({
+        "frequency":0.5
+      });
+
+      instance.env = new Tone.AmplitudeEnvelope({
+        "attack": 0.5,
+        "decay": 0.1,
+        "sustain": 1,
+        "release": 0.5
+      }).chain(chorus,feedbackDelay,filter,vol);
+
+      var pulse = new Tone.PulseOscillator(instance.note, 0.4).connect(instance.env);
+      pulse.start();
+      instance.pulse = pulse;
+
+
+      var saw = new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency": instance.note,
+        "detune":0
+       }).connect(instance.env)
+       saw.start();
+      instance.saw = saw;
+
+      var saw2=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency":Distance.transpose(instance.note,"P8"),
+        "detune":0
+       }).connect(instance.env)
+      saw2.start();
+      instance.saw2 = saw2;
+
+      var lfo3=new Tone.LFO(0.5,-5,5).connect(saw.detune);
+      var lfo4=new Tone.LFO(0.8,5,-5).connect(saw2.detune);
+
+      var lfo=new Tone.LFO(2,0.2,0.8);
+      lfo.connect(pulse.width);
+      //var lfo2=new Tone.LFO(0.1,100,3000).connect(filter.frequency);
+    }
   }
 };
 

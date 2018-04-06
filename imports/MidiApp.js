@@ -105,7 +105,7 @@ export const initUsbKeyStationMidi = function () {
       
         console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
 
-        onNoteHook(e);
+        // onNoteHook(e);
       }
     );
 

@@ -4,10 +4,18 @@ loadTouchEvents($);
 
 import { streamChannel } from '/imports/MainStream.js';
 
+import { colorInfos } from '/imports/MainColorInfos.js';
+Template.Color_page.onCreated( function () {
+  const color = FlowRouter.getParam('color');
+  const { colorCode, name } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+
+  this.color = color;
+  this.colorCode = colorCode;
+  this.name = name;
+})
 Template.Color_page.onRendered(function onRendered() {
   const uuid = '' + Math.floor(Math.random() * 10);
-  const color = FlowRouter.getParam('color');
-  // const { colorCode } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+  const color = this.color;
   
   let mousePos = {};
 
@@ -51,7 +59,7 @@ Template.Color_page.onRendered(function onRendered() {
       .css({
           "left": x - 5 + 'px',
           "top": y - 5 + 'px',
-          "background-color": "blue"
+          "background-color": color
       })
       .appendTo(document.getElementById('color-page'));
 
@@ -146,4 +154,10 @@ Template.Color_page.helpers({
   color() {
     return FlowRouter.getParam('color');
   },
+  colorCode() {
+    return Template.instance().colorCode;
+  },
+  name() {
+    return Template.instance().name;
+  }
 });

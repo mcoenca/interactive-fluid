@@ -46,6 +46,7 @@ export const createUser = function(userStruct) {
 }
 
 export const initAudio = function (soundsRoot, initLoop = true, {
+  shouldEnableMidi = false,
   onMidiNotePlayed = () =>{}
 } = {}) {
   // create web audio api context
@@ -122,33 +123,34 @@ export const initAudio = function (soundsRoot, initLoop = true, {
   if (initLoop) {
     initKickLoop();
   }
-
-  enableMidi(() => {
-    midiInput = new WebMidiControl('USB Keystation 49e');
-    if (midiInput.input) {
-      const midiUser = createUser({
-        voice: 'synth',
-        sound: 'fm',
-      });
-
-      midiInput.addValueListener('pitchbend', (value) => {
-        midiUser.handleEvent({
-          eventType: 'stillPlaying', 
-          xPc: value, 
-          yPc: null
+  if (shouldEnableMidi) {
+    enableMidi(() => {
+      midiInput = new WebMidiControl('USB Keystation 49e');
+      if (midiInput.input) {
+        const midiUser = createUser({
+          voice: 'synth',
+          sound: 'fm',
         });
-      });
 
-      midiInput.addNoteListener('noteon', (noteAndOctave, number) => {
-        midiUser.onNoteOn(noteAndOctave);
-        onMidiNotePlayed(noteAndOctave, number);
-      });
+        midiInput.addValueListener('pitchbend', (value) => {
+          midiUser.handleEvent({
+            eventType: 'stillPlaying', 
+            xPc: value, 
+            yPc: null
+          });
+        });
 
-      midiInput.addNoteListener('noteoff', (noteAndOctave, number) => {
-        midiUser.onNoteOff();
-      });
-    }
-  });
+        midiInput.addNoteListener('noteon', (noteAndOctave, number) => {
+          midiUser.onNoteOn(noteAndOctave);
+          onMidiNotePlayed(noteAndOctave, number);
+        });
+
+        midiInput.addNoteListener('noteoff', (noteAndOctave, number) => {
+          midiUser.onNoteOff();
+        });
+      }  
+    });
+  }
 }
 
 export default { initAudio, createUser };

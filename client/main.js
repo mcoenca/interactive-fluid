@@ -16,10 +16,11 @@ import {perc2color, hexToRGB} from '/imports/utils.js';
 
 // Libs
 import {streamChannel } from '/imports/MainStream.js';
-import {colorInfos, streamColorInfos } from '/imports/MainColorInfos.js';
+import { colorInfos } from '/imports/MainColorInfos.js';
 import { default as FluidApp } from '/imports/Fluid/FluidApp.js';
 
 import { initAudio, createUser } from '/imports/AudioApp.js';
+import { initUsbKeyStationMidi } from '/imports/MidiApp.js';
 
 // change simulation ORIGINAL_APP / NEW_APP
 let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
@@ -31,6 +32,8 @@ const USE_STREAM_COLOR = true;
 const ENABLE_KICK_LOOP = false;
 
 const DEBUG = false;
+
+const ENABLE_OLD_MIDI_FILE = true;
 
 // === FLUID PAGE
 const loadUser = (userColor) => (_.extend({
@@ -106,9 +109,6 @@ Template.fluid.onRendered(function fluidOnRendered() {
     const totalNotes = 120;
     const hexColor = perc2color(100 * number / totalNotes);
     const {red, green, blue} = hexToRGB(hexColor);
-    console.log(number);
-    console.log(hexColor);
-    console.log(red, green, blue);
     this.fluidApp.setBackgroundColor(red/255, green/255, blue/255);
     this.backgroundColor.set(hexColor);
   };
@@ -117,6 +117,7 @@ Template.fluid.onRendered(function fluidOnRendered() {
   // LOADING AUDIO //
   ///////////////////
   initAudio('sounds', ENABLE_KICK_LOOP, {
+    shouldEnableMidi: !ENABLE_OLD_MIDI_FILE,
     onMidiNotePlayed: onNoteHook,
   });
 
@@ -125,6 +126,8 @@ Template.fluid.onRendered(function fluidOnRendered() {
   ///////////////////
   this.fluidApp.init();
   this.fluidApp.run( CURRENT_FLUID_APP );
+
+  if(ENABLE_OLD_MIDI_FILE) initUsbKeyStationMidi();
 });
 
 Template.fluid.helpers({
