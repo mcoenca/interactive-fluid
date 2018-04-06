@@ -45,9 +45,9 @@ export default class FluidApp
         this.id = iAppID;
     }
 
-    handleEvents( x, y, color, eventType, iUUID, fluidControl = {} )
+    handleEvents( x, y, color, eventType, iUUID, fluidControl = {}, voice )
     {
-        this.fluidSimu.handleEvents( x, y, color, eventType, iUUID, fluidControl );
+        this.fluidSimu.handleEvents( x, y, color, eventType, iUUID, fluidControl, voice );
     }
 
     setBackgroundColor ( red, green, blue ) {

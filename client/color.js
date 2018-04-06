@@ -7,7 +7,8 @@ import { streamChannel } from '/imports/MainStream.js';
 import { colorInfos } from '/imports/MainColorInfos.js';
 Template.Color_page.onCreated( function () {
   const color = FlowRouter.getParam('color');
-  const { colorCode, name } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+  const { colorCode, name, voice } = _.find(colorInfos, colorInfo => colorInfo.color === color);
+  this.voice = voice;
 
   this.color = color;
   this.colorCode = colorCode;
@@ -16,7 +17,7 @@ Template.Color_page.onCreated( function () {
 Template.Color_page.onRendered(function onRendered() {
   const uuid = '' + Math.floor(Math.random() * 10);
   const color = this.color;
-  
+
   let mousePos = {};
 
   function handleMouseMove(event) {
@@ -51,8 +52,6 @@ Template.Color_page.onRendered(function onRendered() {
     };
   }
 
-  document.onmousemove = handleMouseMove;
-  $(document).on('touchmove', handleMouseMove);
 
   const newCircle = (x, y) => {
     const circleDiv = $('<div class="good-circle">')
@@ -134,6 +133,11 @@ Template.Color_page.onRendered(function onRendered() {
     startPlaying(eX, eY, eX/width, eY/height);
   });
 
+  if ( this.voice === 'sampler' )
+  {
+    return;
+  }
+
   $('body').on('tapend', (e) => {
     e.preventDefault();
     const width = $(window).width();
@@ -144,8 +148,11 @@ Template.Color_page.onRendered(function onRendered() {
     stopPlaying(eX, eY, eX/width, eY/height);
   })
 
+  document.onmousemove = handleMouseMove;
+  $(document).on('touchmove', handleMouseMove);
+
   $(document).mouseleave(function () {
-    stopPlaying();
+      stopPlaying();
   });
 });
 

@@ -298,7 +298,7 @@ export default class OriginalFluid extends BaseFluid
         circle.fillColor = color;
     }
 
-    _onEventStart( x, y, color, iUUID, fluidControl = {} )
+    _onEventStart( x, y, color, iUUID, fluidControl = {}, voice )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         let circle = _GetCreateCircleInitPosForUUID( iUUID, {x,y} ).circle;
@@ -320,7 +320,7 @@ export default class OriginalFluid extends BaseFluid
         gl.uniform4f(this.fluidProgram.uniforms.u_colorBackground, iRed, iGreen, iBlue, 1);
     }
 
-    _onEventMove( x, y, color, iUUID, fluidControl = {} )
+    _onEventMove( x, y, color, iUUID, fluidControl = {}, voice )
     {
         const shape = _GetCreateShapeForColor( iUUID );
         const lastShapePoint= _.last(shape.points);
@@ -334,15 +334,20 @@ export default class OriginalFluid extends BaseFluid
 
         const isStayingAtLastPoint = lastShapePoint && (Math.abs( lastShapePoint.x - x )  <= 2 || Math.abs( lastShapePoint.y -y ) <= 2);
         
-        if (!isStayingAtLastPoint)
+        if (!isStayingAtLastPoint && voice !== 'sampler' )
         {
-            console.log(x, y);
+            _GetCreateCircleInitPosForUUID( iUUID ).radius = 0;
             shape.points.push( {x: x, y:y } );
             shape.fillColor = color;
         } else if (isStayingAtStartPoint) {
             console.log("Incrementing circle" );
-            _GetCreateCircleInitPosForUUID( iUUID ).radius += 3;
+            if ( _GetCreateCircleInitPosForUUID( iUUID ).radius < 100 )
+                _GetCreateCircleInitPosForUUID( iUUID ).radius += 3;
             this._addCircle(x,y,color,iUUID);
+        }
+        else
+        {
+            _GetCreateCircleInitPosForUUID( iUUID ).radius = 0;
         }
 
         if (lineMaxPoints && shape.points.length > lineMaxPoints) {
@@ -351,7 +356,7 @@ export default class OriginalFluid extends BaseFluid
         }  
     }
 
-    _onEventEnd( x, y, color, iUUID, fluidControl = {} )
+    _onEventEnd( x, y, color, iUUID, fluidControl = {}, voice )
     {
         let shape = _GetCreateShapeForColor( iUUID );
         shape.destroy();

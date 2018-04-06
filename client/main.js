@@ -67,7 +67,7 @@ Template.fluid.onCreated(function fluidOnCreated() {
     x = xPc * width;
     y = yPc * height;
 
-    this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid, fluidControl );
+    this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid, fluidControl, voice );
   }
 
   const handleStreamEvent = (streamEvent) => {
