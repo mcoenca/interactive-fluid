@@ -1,0 +1,11 @@
+<template name="Join_page">
+  <div id="color-page" class="color-page">
+    {{#each colorInfos}}
+    <div>
+      <a href="{{path this}}" class="color-link" style="color: {{colorCode}}; text-decoration-color: {{colorCode}}">{{color}} : {{name}}</a>
+    </div>
+
+    {{/each}}
+    }
+  </div>
+</template>

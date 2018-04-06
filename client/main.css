@@ -21,10 +21,14 @@ canvas {
 }
 
 .color-page {
-    width: 100vw;
-    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
     background-color: black;
 }
+
+/*.color-page {
+  min
+}*/
 
 .weird-circle {
   width: 20px;
@@ -43,6 +47,17 @@ canvas {
     border-radius: 750px 250px 750px 250px /
                    250px 750px 250px 750px;
   }
+}
+
+.color-text {
+  padding-left: 20%;
+  font-size: 14pt;
+}
+
+.color-link {
+  padding-left: 20%;
+  font-size: 14pt;
+  text-decoration: underline;
 }
 
 .good-circle {
