@@ -97,9 +97,9 @@ Template.fluid.onCreated(function fluidOnCreated() {
     drawStream(streamEvent);
   }
 
-  streamChannel.subscribe('streamEvents', ({data: streamEvent}) => {
+  streamChannel.subscribe('streamEvents', (message) => {
     if (DEBUG) console.log('stream event received');
-    handleStreamEvent(streamEvent);
+    handleStreamEvent(message);
   })
 });
 

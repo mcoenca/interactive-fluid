@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
+import { streamChannel} from "../imports/MainStream";
+
 
 Shapes = new Mongo.Collection('shapes');
 
