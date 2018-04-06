@@ -6,10 +6,10 @@ import Distance from 'tonal';
 let synth;
 let polySynth;
 let onKeyStationNoteHook = (noteAndOctave) => {};
-//let midiDevice="MPKmini2";
-let midiDevice="USB Keystation 49e";
+let midiDevice="MPKmini2";
+//let midiDevice="USB Keystation 49e";
 
-let synthArray=[];
+
 
 
 function syn(notename,note){
@@ -34,29 +34,29 @@ function syn(notename,note){
     }).chain(chorus,feedbackDelay,filter,vol);
 
 
-  var pulse = new Tone.PulseOscillator(this.note,0.4).connect(this.enve);
-  pulse.start()
+  this.pulse = new Tone.PulseOscillator(this.note,0.4).connect(this.enve);
+  this.pulse.start()
 
 
-  var saw=new Tone.OmniOscillator({
+  this.saw=new Tone.OmniOscillator({
         "type":"sawtooth",
         "frequency":this.note,
         "detune":0
        }).connect(this.enve)
-       saw.start();
+       this.saw.start();
 
-        var saw2=new Tone.OmniOscillator({
+        this.saw2=new Tone.OmniOscillator({
         "type":"sawtooth",
         "frequency":Distance.transpose(this.note,"P8"),
         "detune":0
        }).connect(this.enve)
-       saw2.start();
+       this.saw2.start();
 
-      var lfo3=new Tone.LFO(0.5,-5,5).connect(saw.detune);
-       var lfo4=new Tone.LFO(0.8,5,-5).connect(saw2.detune);
+      var lfo3=new Tone.LFO(0.5,-5,5).connect(this.saw.detune);
+       var lfo4=new Tone.LFO(0.8,5,-5).connect(this.saw2.detune);
 
   var lfo=new Tone.LFO(2,0.2,0.8);
-  lfo.connect(pulse.width);
+  lfo.connect(this.pulse.width);
   //var lfo2=new Tone.LFO(0.1,100,3000).connect(filter.frequency);
 }
 
@@ -78,7 +78,7 @@ export const initUsbKeyStationMidi = function () {
     console.log(WebMidi.outputs);
 
     var input = WebMidi.getInputByName(midiDevice);
-
+    synthMidi=new syn("C2","C2");
 
 
     if (!input) {
@@ -94,14 +94,13 @@ export const initUsbKeyStationMidi = function () {
       function (e) {
 
               esy=e.note.name+e.note.octave;
-            for (var j=1;j<synthArray.length;j++){
-        if (!synthArray[j]){
-          break;
-        }
-      }
-        
-      synthArray[j]= new syn(esy,e.note);
-      synthArray[j].enve.triggerAttack();
+
+      synthMidi.enve.triggerRelease();
+      synthMidi.note=esy;
+      synthMidi.pulse.frequency.value=esy;
+      synthMidi.saw2.frequency.value=Distance.transpose(esy,"4P");
+      synthMidi.saw.frequency.value=Distance.transpose(esy,"8P");
+      synthMidi.enve.triggerAttack();
       
         console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
 
@@ -112,13 +111,11 @@ export const initUsbKeyStationMidi = function () {
     input.addListener('noteoff', "all",
   
     function (e) {
-      for (var j=1;j<synthArray.length;j++){
-        if (synthArray[j] && (e.note.name+e.note.octave)===synthArray[j].note){
-          synthArray[j].enve.triggerRelease();
-          synthArray[j]=null;
-        }
-      }
+      
+        if (e.note.name+e.note.octave===synthMidi.note){
+                synthMidi.enve.triggerRelease();
 
+        }
 
       console.log("Received 'noteoff' message (" + e.note.name + e.note.octave + ").");
     }
