@@ -29,11 +29,11 @@ let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
 const USE_STREAM_COLOR = true;
 
 // Enable kick and bass base loop
-const ENABLE_KICK_LOOP = false;
+const ENABLE_KICK_LOOP = true;
 
 const DEBUG = false;
 
-const ENABLE_OLD_MIDI_FILE = true;
+const ENABLE_OLD_MIDI_FILE = false;
 
 // === FLUID PAGE
 const loadUser = (userColor) => (_.extend({

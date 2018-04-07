@@ -24,8 +24,25 @@ FlowRouter.route('/tone', {
   }
 })
 
+let isBack = false;
+
 FlowRouter.route('/', {
+   triggersEnter: [
+    function() {
+      console.log('trigger route');
+      if (isBack) {
+        console.log(isBack);
+        location.reload();
+      }
+    }
+  ],
+  triggersExit: [
+    function() {
+      isBack = true;
+    }
+  ],
   action(params, queryParams) {
+
     BlazeLayout.render('App_body', {
       main: 'Join_page'
     })

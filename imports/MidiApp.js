@@ -6,8 +6,8 @@ import Distance from 'tonal';
 let synth;
 let polySynth;
 let onKeyStationNoteHook = (noteAndOctave) => {};
-let midiDevice="MPKmini2";
-//let midiDevice="USB Keystation 49e";
+// let midiDevice="MPKmini2";
+let midiDevice="USB Keystation 49e";
 
 
 

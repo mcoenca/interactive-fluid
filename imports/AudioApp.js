@@ -126,17 +126,27 @@ export const initAudio = function (soundsRoot, initLoop = true, {
   if (shouldEnableMidi) {
     enableMidi(() => {
       midiInput = new WebMidiControl('USB Keystation 49e');
+
       if (midiInput.input) {
         const midiUser = createUser({
           voice: 'synth',
-          sound: 'fm',
+          sound: 'monoMarti',
         });
 
         midiInput.addValueListener('pitchbend', (value) => {
+          console.log('pitch + ', value);
           midiUser.handleEvent({
             eventType: 'stillPlaying', 
             xPc: value, 
             yPc: null
+          });
+        });
+
+        midiInput.addValueListener('controlchange', (value) => {
+          midiUser.handleEvent({
+            eventType: 'stillPlaying',
+            xPc: null,
+            yPc: value / 127
           });
         });
 
@@ -146,7 +156,7 @@ export const initAudio = function (soundsRoot, initLoop = true, {
         });
 
         midiInput.addNoteListener('noteoff', (noteAndOctave, number) => {
-          midiUser.onNoteOff();
+          midiUser.onNoteOff(noteAndOctave);
         });
       }  
     });

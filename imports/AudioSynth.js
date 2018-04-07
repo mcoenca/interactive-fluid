@@ -386,6 +386,91 @@ const synths = {
       }
     }
   },
+  monoMarti: {
+    create(instance) {
+      instance.note = 'C2';
+
+      const feedbackDelay = new Tone.FeedbackDelay("8n", 0.5)
+
+      const filter=new Tone.Filter({
+        "frequency":1000,
+        "Q":10,
+      });
+
+      const chorus=new Tone.Chorus ({
+        "frequency":0.5
+      });
+
+      const vol = new Tone.Volume(-36);
+
+      instance.enve = new Tone.AmplitudeEnvelope({
+        "attack": 0.5,
+        "decay": 0.1,
+        "sustain": 1,
+        "release": 0.5
+      }).chain(chorus,feedbackDelay,filter,vol);
+
+
+      instance.pulse = new Tone.PulseOscillator(instance.note,0.4).connect(instance.enve);
+      instance.pulse.start()
+
+      instance.saw=new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency": instance.note,
+        "detune":0
+       }).connect(instance.enve)
+      
+      instance.saw.start();
+
+      instance.saw2= new Tone.OmniOscillator({
+        "type":"sawtooth",
+        "frequency": Distance.transpose(instance.note,"P8"),
+        "detune":0
+       }).connect(instance.enve)
+       
+      instance.saw2.start();
+
+      const lfo3=new Tone.LFO(0.5,-5,5).connect(instance.saw.detune);
+      const lfo4=new Tone.LFO(0.8,5,-5).connect(instance.saw2.detune);
+
+      this.lfo3 = lfo3;
+      this.lfo4 = lfo4;
+
+      const lfo=new Tone.LFO(2,0.2,0.8);
+      lfo.connect(instance.pulse.width);
+
+      instance.output = vol;
+    },
+    onNoteOn(noteAndOctave) {
+      this.enve.triggerRelease();
+      this.note=noteAndOctave;
+      this.pulse.frequency.value=noteAndOctave;
+      this.saw2.frequency.value=Distance.transpose(noteAndOctave,"4P");
+      this.saw.frequency.value=Distance.transpose(noteAndOctave,"8P");
+      this.enve.triggerAttack();
+    },
+    onNoteOff(noteAndOctave) {
+      if (this.note === noteAndOctave) {
+        this.enve.triggerRelease();
+      }
+    },
+    touchEvent(evt, x, y) {
+      if (evt === 'stillPlaying') {
+        if (x) {
+          const amp = 10;
+          const newAmp = x;
+          this.lfo3.min = - 5 - newAmp;
+          this.lfo3.max = 5 + newAmp
+          this.lfo4.min =  5 + newAmp;
+          this.lfo4.max = - 5 - newAmp;
+        }
+        if (y) {
+          console.log(y);
+          // this.filter.q.value.rampTo(0.1);
+        }
+      }
+    }
+  },
   poly2: {
     create(instance) {
       instance.note = 'C2';
