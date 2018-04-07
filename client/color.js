@@ -44,11 +44,28 @@ Template.Color_page.onRendered(function onRendered() {
     const width = $(window).width();
     const height = $(window).height();
 
+    let eX, eY;
+    //multitouch not supported
+    if ( !event.touches )
+    {
+        eX = event.pageX;
+        eY = event.pageY;
+    }
+    else if ( event.touches && event.touches.length !== 1 )
+    {
+        return;
+    }
+    else
+    {
+        eX = event.touches[0].pageX;
+        eY = event.touches[0].pageY;
+    }
+
     mousePos = {
-        x: event.pageX,
-        y: event.pageY,
-        xPc: event.pageX/width,
-        yPc: event.pageY/height,
+        x: eX,
+        y: eY,
+        xPc: eX/width,
+        yPc: eY/height,
     };
   }
 
@@ -69,6 +86,11 @@ Template.Color_page.onRendered(function onRendered() {
 
   const stillPlaying = () => {
     const {x, y, xPc, yPc} = mousePos;
+
+    // if ( !x || !y || !xPc || !yPc )
+    // {
+     //  return;
+    // }
 
     streamChannel.publish('streamEvents', {
       uuid,
@@ -101,7 +123,6 @@ Template.Color_page.onRendered(function onRendered() {
     });
 
     newCircle(x, y);
-
     checkPlayInAWhile();
   };
 
@@ -122,14 +143,30 @@ Template.Color_page.onRendered(function onRendered() {
   // $('body').on('mousedown', (e) => {
   $('body').on('tapstart', (e) => {
     e.preventDefault()
-    //multitouch not supported
-    if(e.touches && e.touches.length >= 2) return;
     const width = $(window).width();
     const height = $(window).height();
-
-    const eX = e.pageX;
-    const eY = e.pageY;
-
+    let eX, eY;
+    //multitouch not supported
+    if ( !e.touches )
+    {
+        eX = e.pageX;
+        eY = e.pageY;
+    }
+    else if ( e.touches && e.touches.length !== 1 )
+    {
+      return;
+    }
+    else
+    {
+        eX = e.touches[0].pageX;
+        eY = e.touches[0].pageY;
+    }
+    mousePos = {
+        x: eX,
+        y: eY,
+        xPc: eX/width,
+        yPc: eY/height,
+    };
     startPlaying(eX, eY, eX/width, eY/height);
   });
 
@@ -146,7 +183,7 @@ Template.Color_page.onRendered(function onRendered() {
     const eX = e.pageX;
     const eY = e.pageY;
     stopPlaying(eX, eY, eX/width, eY/height);
-  })
+  });
 
   document.onmousemove = handleMouseMove;
   $(document).on('touchmove', handleMouseMove);
