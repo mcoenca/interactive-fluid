@@ -3,7 +3,7 @@ import ably from 'ably'
 const STREAM_ABLY   = 1;
 const STREAM_METOER = 2;
 
-let g_streamSystem = STREAM_ABLY;
+let g_streamSystem = STREAM_METOER;
 
 class StreamChannel
 {
