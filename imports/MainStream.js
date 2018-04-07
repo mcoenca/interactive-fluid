@@ -3,7 +3,7 @@ import ably from 'ably'
 const STREAM_ABLY   = 1;
 const STREAM_METOER = 2;
 
-let g_streamSystem = STREAM_METOER;
+let g_streamSystem = STREAM_ABLY;
 
 class StreamChannel
 {
@@ -33,7 +33,7 @@ class AblyStreamChannel extends StreamChannel
     constructor( iChannelName )
     {
         super( iChannelName );
-        let client = new ably.Realtime('P6TapA.DpvyQg:xpEbBUNQPVRdd9Va');
+        let client = new ably.Realtime('Pc7xqg.jcx1DA:Xbz2vUi-mKgnVBFn');
         this.channel = client.channels.get( this.channelName );
     }
 
