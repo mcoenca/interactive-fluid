@@ -44,11 +44,28 @@ Template.Color_page.onRendered(function onRendered() {
     const width = $(window).width();
     const height = $(window).height();
 
+    let eX, eY;
+    //multitouch not supported
+    if ( !event.touches )
+    {
+        eX = event.pageX;
+        eY = event.pageY;
+    }
+    else if ( event.touches && event.touches.length !== 1 )
+    {
+        return;
+    }
+    else
+    {
+        eX = event.touches[0].pageX;
+        eY = event.touches[0].pageY;
+    }
+
     mousePos = {
-        x: event.pageX,
-        y: event.pageY,
-        xPc: event.pageX/width,
-        yPc: event.pageY/height,
+        x: eX,
+        y: eY,
+        xPc: eX/width,
+        yPc: eY/height,
     };
   }
 
@@ -70,13 +87,20 @@ Template.Color_page.onRendered(function onRendered() {
   const stillPlaying = () => {
     const {x, y, xPc, yPc} = mousePos;
 
-    streamChannel.publish('streamEvents', {
-      uuid,
-      eventType: 'stillPlaying',
-      color,
-      xPc,
-      yPc,
-    });
+    if ( !x || !y || !xPc || !yPc )
+    {
+      return;
+    }
+
+    if (this.voice !== 'sampler') {
+      streamChannel.publish('streamEvents', {
+        uuid,
+        eventType: 'stillPlaying',
+        color,
+        xPc,
+        yPc,
+      });
+    }
 
     newCircle(x, y);
   }
@@ -92,6 +116,8 @@ Template.Color_page.onRendered(function onRendered() {
   const startPlaying = (x, y, xPc, yPc) => {
     playing = true;
 
+    mousePos = {x, y, xPc, yPc};
+
     streamChannel.publish('streamEvents', {
       uuid,
       eventType: 'startPlaying',
@@ -101,7 +127,6 @@ Template.Color_page.onRendered(function onRendered() {
     });
 
     newCircle(x, y);
-
     checkPlayInAWhile();
   };
 
@@ -118,42 +143,76 @@ Template.Color_page.onRendered(function onRendered() {
     });
   }
 
-
-  // $('body').on('mousedown', (e) => {
-  $('body').on('tapstart', (e) => {
-    e.preventDefault()
-    //multitouch not supported
-    if(e.touches && e.touches.length >= 2) return;
-    const width = $(window).width();
-    const height = $(window).height();
-
-    const eX = e.pageX;
-    const eY = e.pageY;
-
-    startPlaying(eX, eY, eX/width, eY/height);
-  });
-
-  if ( this.voice === 'sampler' )
-  {
-    return;
-  }
-
   $('body').on('tapend', (e) => {
     e.preventDefault();
     const width = $(window).width();
     const height = $(window).height();
 
-    const eX = e.pageX;
-    const eY = e.pageY;
+    let eX, eY;
+    //multitouch not supported
+    if ( !e.touches )
+    {
+        eX = e.pageX;
+        eY = e.pageY;
+    }
+    else if ( e.touches && e.touches.length !== 1 )
+    {
+      return;
+    }
+    else
+    {
+        eX = e.touches[0].pageX;
+        eY = e.touches[0].pageY;
+    }
+
     stopPlaying(eX, eY, eX/width, eY/height);
-  })
+  });
+
+  $(document).mouseleave(function () {
+    const {x, y, xPc, yPc} = mousePos;
+    stopPlaying(x, y, xPc, yPc);
+  });
+
+  document.beforeunload = function () {
+    const {x, y, xPc, yPc} = mousePos;
+    stopPlaying(x, y, xPc, yPc);
+  }
+
+  // $('body').on('mousedown', (e) => {
+  $('body').on('tapstart', (e) => {
+    e.preventDefault()
+    const width = $(window).width();
+    const height = $(window).height();
+    let eX, eY;
+    //multitouch not supported
+    if ( !e.touches )
+    {
+        eX = e.pageX;
+        eY = e.pageY;
+    }
+    else if ( e.touches && e.touches.length !== 1 )
+    {
+      return;
+    }
+    else
+    {
+        eX = e.touches[0].pageX;
+        eY = e.touches[0].pageY;
+    }
+    mousePos = {
+        x: eX,
+        y: eY,
+        xPc: eX/width,
+        yPc: eY/height,
+    };
+
+    console.log(mousePos);
+    startPlaying(eX, eY, eX/width, eY/height);
+  });
+
 
   document.onmousemove = handleMouseMove;
   $(document).on('touchmove', handleMouseMove);
-
-  $(document).mouseleave(function () {
-      stopPlaying();
-  });
 });
 
 

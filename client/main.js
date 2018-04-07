@@ -31,7 +31,7 @@ const USE_STREAM_COLOR = true;
 // Enable kick and bass base loop
 const ENABLE_KICK_LOOP = true;
 
-const DEBUG = false;
+const DEBUG = true;
 
 const ENABLE_OLD_MIDI_FILE = false;
 
