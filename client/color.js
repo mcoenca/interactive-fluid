@@ -87,18 +87,20 @@ Template.Color_page.onRendered(function onRendered() {
   const stillPlaying = () => {
     const {x, y, xPc, yPc} = mousePos;
 
-    // if ( !x || !y || !xPc || !yPc )
-    // {
-     //  return;
-    // }
+    if ( !x || !y || !xPc || !yPc )
+    {
+      return;
+    }
 
-    streamChannel.publish('streamEvents', {
-      uuid,
-      eventType: 'stillPlaying',
-      color,
-      xPc,
-      yPc,
-    });
+    if (this.voice !== 'sampler') {
+      streamChannel.publish('streamEvents', {
+        uuid,
+        eventType: 'stillPlaying',
+        color,
+        xPc,
+        yPc,
+      });
+    }
 
     newCircle(x, y);
   }
@@ -113,6 +115,8 @@ Template.Color_page.onRendered(function onRendered() {
 
   const startPlaying = (x, y, xPc, yPc) => {
     playing = true;
+
+    mousePos = {x, y, xPc, yPc};
 
     streamChannel.publish('streamEvents', {
       uuid,
@@ -139,6 +143,40 @@ Template.Color_page.onRendered(function onRendered() {
     });
   }
 
+  $('body').on('tapend', (e) => {
+    e.preventDefault();
+    const width = $(window).width();
+    const height = $(window).height();
+
+    let eX, eY;
+    //multitouch not supported
+    if ( !e.touches )
+    {
+        eX = e.pageX;
+        eY = e.pageY;
+    }
+    else if ( e.touches && e.touches.length !== 1 )
+    {
+      return;
+    }
+    else
+    {
+        eX = e.touches[0].pageX;
+        eY = e.touches[0].pageY;
+    }
+
+    stopPlaying(eX, eY, eX/width, eY/height);
+  });
+
+  $(document).mouseleave(function () {
+    const {x, y, xPc, yPc} = mousePos;
+    stopPlaying(x, y, xPc, yPc);
+  });
+
+  document.beforeunload = function () {
+    const {x, y, xPc, yPc} = mousePos;
+    stopPlaying(x, y, xPc, yPc);
+  }
 
   // $('body').on('mousedown', (e) => {
   $('body').on('tapstart', (e) => {
@@ -167,30 +205,14 @@ Template.Color_page.onRendered(function onRendered() {
         xPc: eX/width,
         yPc: eY/height,
     };
+
+    console.log(mousePos);
     startPlaying(eX, eY, eX/width, eY/height);
   });
 
-  if ( this.voice === 'sampler' )
-  {
-    return;
-  }
-
-  $('body').on('tapend', (e) => {
-    e.preventDefault();
-    const width = $(window).width();
-    const height = $(window).height();
-
-    const eX = e.pageX;
-    const eY = e.pageY;
-    stopPlaying(eX, eY, eX/width, eY/height);
-  });
 
   document.onmousemove = handleMouseMove;
   $(document).on('touchmove', handleMouseMove);
-
-  $(document).mouseleave(function () {
-      stopPlaying();
-  });
 });
 
 
