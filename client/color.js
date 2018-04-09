@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import loadTouchEvents from 'jquery-touch-events';
 loadTouchEvents($);
+import uuidv1 from 'uuid/v1';
+
 
 import { streamChannel } from '/imports/MainStream.js';
 
@@ -15,8 +17,9 @@ Template.Color_page.onCreated( function () {
   this.name = name;
 })
 Template.Color_page.onRendered(function onRendered() {
-  const uuid = '' + Math.floor(Math.random() * 10);
+  const uuid = uuidv1();
   const color = this.color;
+  const colorCode = this.colorCode;
 
   let mousePos = {};
 
@@ -75,7 +78,7 @@ Template.Color_page.onRendered(function onRendered() {
       .css({
           "left": x - 5 + 'px',
           "top": y - 5 + 'px',
-          "background-color": color
+          "background-color": colorCode
       })
       .appendTo(document.getElementById('color-page'));
 

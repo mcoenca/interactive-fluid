@@ -3,7 +3,7 @@ const palettes = [
   name: 'classic',
   colorInfos: [{
     color: 'red',
-    name: 'Kick',
+    name: 'Kick [Sampler: just click]',
     colorCode: '#ff0000',
     id: 1,
     voice: 'sampler',
@@ -11,7 +11,7 @@ const palettes = [
     quantize: 4
   }, {
     color: 'green',
-    name: 'Snare',
+    name: 'Snare [Sampler: just click]',
     colorCode: '#1ae876',
     id: 2,
     voice: 'sampler',
@@ -19,7 +19,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'blue',
-    name: 'Closed Hi-Hat',
+    name: 'Closed Hi-Hat [Sampler: just click]',
     colorCode: '#0000ff',
     id: 3,
     voice: 'sampler',
@@ -27,7 +27,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'yellow',
-    name: 'Open Hi-Hat',
+    name: 'Open Hi-Hat [Sampler: just click]',
     colorCode: 'yellow',
     id: 4,
     voice: 'sampler',
@@ -35,7 +35,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'turquoise',
-    name: 'Rimshot',
+    name: 'Rimshot [Sampler: just click]',
     colorCode: '#39e1ff',
     id: 5,
     voice: 'sampler',
@@ -43,7 +43,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'pink',
-    name: 'Noise',
+    name: 'Noise [Synth: touch and drag !]',
     colorCode: '#f27eba',
     id: 6,
     voice: 'synth',
@@ -55,7 +55,7 @@ const palettes = [
     }
   }, {
     color: 'sky',
-    name: 'Pads',
+    name: 'Pads [Synth: touch and drag !]',
     colorCode: '#87B2E8',
     id: 7,
     voice: 'synth',
@@ -67,7 +67,7 @@ const palettes = [
     }
   }, {
     color: 'purple',
-    name: 'Bass',
+    name: 'Bass [Synth: touch and drag !]',
     colorCode: '#6c1ae8',
     id: 8,
     voice: 'synth',
@@ -75,7 +75,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'orange',
-    name: 'Square Synth',
+    name: 'Square Synth [Synth: touch and drag !]',
     colorCode: '#e87a1a',
     id: 9,
     voice: 'synth',
@@ -83,7 +83,7 @@ const palettes = [
     quantize: 8
   }, {
     color: 'violet',
-    name: 'Tremolo Synth',
+    name: 'Tremolo Synth [Synth: touch and drag !]',
     colorCode: '#9932CC',
     id : 10,
     voice: 'synth',
@@ -95,7 +95,7 @@ const palettes = [
     }
   }, {
     color: 'brown',
-    name: 'Simple Polysynth',
+    name: 'Simple Polysynth [Synth: touch and drag !]',
     colorCode: 'brown',
     id : 11,
     voice: 'synth',
@@ -107,7 +107,7 @@ const palettes = [
     }
   }, {
     color: 'aqua',
-    name: 'Click',
+    name: 'Click [Sampler: just click]',
     colorCode: '#99ccff',
     id: 12,
     voice: 'sampler',
@@ -115,7 +115,7 @@ const palettes = [
     quantize: 8,
   }, {
     color: 'emerald',
-    name: 'Lazer',
+    name: 'Lazer [Sampler: just click]',
     colorCode: '#339966',
     id: 13,
     voice: 'sampler',
@@ -123,7 +123,7 @@ const palettes = [
     quantize: 8,
   }, {
     color: 'gold',
-    name: 'Crush',
+    name: 'Crush [Sampler: just click]',
     colorCode: '#ffcc00',
     id: 14,
     voice: 'sampler',
