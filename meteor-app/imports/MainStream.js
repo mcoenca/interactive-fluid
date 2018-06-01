@@ -105,6 +105,8 @@ class SocketIoStreamChannel extends StreamChannel
         this.channelName = iChannelName;
 
         this.port = 8080;
+        // this.clientPort = 8080;
+        this.clientPort = 8000;
 
         console.log( "streaming using socket io");
 
@@ -137,7 +139,7 @@ class SocketIoStreamChannel extends StreamChannel
         }
 
         if (Meteor.isClient) {
-            this.socket = socketioClient(window.location.hostname + ":" + this.port);
+            this.socket = socketioClient(window.location.hostname + ":" + this.clientPort);
         }
     }
 
