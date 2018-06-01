@@ -1,4 +1,5 @@
 import Tone from 'tone';
+import StartAudioContext from 'startaudiocontext';
 
 import { AudioSampler } from '/imports/AudioSampler.js';
 import { AudioSynth } from '/imports/AudioSynth.js';
@@ -51,6 +52,8 @@ export const initAudio = function (soundsRoot, initLoop = true, {
 } = {}) {
   // create web audio api context
   audioCtx = Tone.context;
+  StartAudioContext(audioCtx);
+
   //tuna = new Tuna(audioCtx);
 
   soundsRootUrl = soundsRoot;

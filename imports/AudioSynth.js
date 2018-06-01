@@ -146,7 +146,7 @@ const synths = {
 
         if (this.quantize != 0)
         {
-          var nufmQuants = this.audioCtx.currentTime * this.quantize;
+          var numQuants = this.audioCtx.currentTime * this.quantize;
           var playTime = (Math.floor(numQuants) + 1) / this.quantize;
           this.synth.triggerAttack('C3', playTime);
         }
