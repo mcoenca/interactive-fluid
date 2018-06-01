@@ -26,10 +26,16 @@ def message(sid, data):
     # print ('message received')
     # ('message ', {u'color': u'red', u'eventType': u'startPlaying', u'xPc': 0.7375565610859729, u'uuid': u'76233600-65c2-11e8-bb94-9f72e9fbefb8', u'yPc': 0.6273115220483642})
     # {u'color': u'red', u'eventType': u'stopPlaying', u'xPc': 0.9049773755656109, u'uuid': u'76233600-65c2-11e8-bb94-9f72e9fbefb8', u'yPc': 0.534850640113798}
+    print('receiving and broadcasting')
+    print channelName
+    print data
     sio.emit(channelName, data)
 
 def emit(data):
+  global channelName
   print('emitting')
+  print channelName
+  print data
   sio.emit(channelName, data)
 
 def configKinect():
