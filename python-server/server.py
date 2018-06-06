@@ -1,13 +1,16 @@
-# Same code than in Meteor.isServer
-# of MainStream.js
+# Personal back end socket.io server
 import socketio
 import eventlet
-import threading
-import kinect
+eventlet.monkey_patch()
+
 from flask import Flask, render_template
 
-sio = socketio.Server()
+mgr = socketio.KombuManager('amqp://mcoenca:cristohoger24@localhost:5672/pythonsocket')
+
+sio = socketio.Server(client_manager=mgr)
+
 app = Flask(__name__)
+
 
 channelName = "streamEvents";
 
@@ -30,16 +33,6 @@ def message(sid, data):
     print channelName
     print data
     sio.emit(channelName, data)
-
-def emit(data):
-  global channelName
-  print('emitting')
-  print channelName
-  print data
-  sio.emit(channelName, data)
-
-def configKinect():
-  kinect.showScreens(emit)
 
 @sio.on('disconnect')
 def disconnect(sid):

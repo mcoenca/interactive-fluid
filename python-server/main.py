@@ -1,12 +1,28 @@
-import server
 import freenect
 import cv2
 import numpy as np
 
 import imutils
 
-import threading
 from collections import OrderedDict
+
+import socketio
+
+import eventlet
+eventlet.monkey_patch()
+
+sio = socketio.KombuManager('amqp://mcoenca:cristohoger24@localhost:5672/pythonsocket', write_only=True)
+
+channelName = "streamEvents";
+
+# working because we use rabbitmq for inter thread messaging
+def emit(data):
+  global channelName
+  print('emitting')
+  print channelName
+  print data
+  sio.emit(channelName, data)
+
 
 # Size of kinect in pixels
 largeur = 640
@@ -57,8 +73,10 @@ def showScreens(callback=False):
   print ('launching screens')
 
   # use http://colorizer.org/
+  
   # true orange
   # orangeLab = np.asarray([16 * 255 / 100, 34.55 + 128, 21.44 + 128], np.uint8)
+
   # green 
   orangeLab = np.asarray([28.8 * 255 / 100, -12.37 + 128, 5.55 + 128], np.uint8)
 
@@ -162,7 +180,7 @@ def showScreens(callback=False):
 
     if orangeDetected:
       if orangeInstrument['lastplayed'] and movedEnough:
-        server.emit({
+        emit({
           'color': 'red',
           'eventType': 'stillPlaying',
           'xPc': orangeInstrument['pcX'],
@@ -170,7 +188,7 @@ def showScreens(callback=False):
           'uuid': 'red'
         })
       elif not orangeInstrument['lastplayed']:
-        server.emit({
+        emit({
           'color': 'red',
           'eventType': 'startPlaying',
           'xPc': orangeInstrument['pcX'],
@@ -180,7 +198,7 @@ def showScreens(callback=False):
         orangeInstrument['lastplayed'] = True
     else:
       if (orangeInstrument['lastplayed']):
-        server.emit({
+        emit({
           'color': 'red',
           'eventType': 'stopPlaying',
           'xPc': orangeInstrument['pcX'],
@@ -197,10 +215,10 @@ def showScreens(callback=False):
     # cv2.imshow('Depth frame', depth)
     # cv2.imshow('In Range Frame', in_range_depth)
     cv2.imshow('RGB image',frame)
-    # cv2.imshow('Blur', blurred)
+    cv2.imshow('Blur', blurred)
     # cv2.imshow('Thresh', thresh)
-    # cv2.imshow('Disance ', squaroot)
-    # cv2.imshow('Color Thresh', colorthresh)
+    cv2.imshow('Disance ', squaroot)
+    cv2.imshow('Color Thresh', colorthresh)
     cv2.imshow('Both Thresh', onlyOrangeInRange)
 
     k = cv2.waitKey(5) & 0xFF
@@ -215,10 +233,9 @@ def showScreens(callback=False):
       upperDepth = upperDepth - offset
       print lowerDepth, upperDepth
 
-if __name__ == '__main__':
-  # launching socket as subroutine
-  thread = threading.Thread(target=server.runApp, args=())
-  thread.daemon = True
-  thread.start()       
+# eventlet.spawn(showScreens)
 
-  showScreens()
+if __name__ == '__main__': 
+  # should see a red thing
+  emit({u'color': u'red', u'eventType': u'startPlaying', u'xPc': 0.7375565610859729, u'uuid': u'76233600-65c2-11e8-bb94-9f72e9fbefb8', u'yPc': 0.6273115220483642})
+  showScreens()     
