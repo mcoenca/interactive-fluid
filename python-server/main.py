@@ -21,12 +21,17 @@ configs = {
     'offset': 1,
     'multiplicatorVec': [0, 1, 1],
     'activeColors': [
-      'green-no-lum'
+      'green-no-lum',
+      'violet-dark-no-lum',
+      'dorange-red-paper-no-lum',
+      'dorange-bag-no-lum',
+      'dyellow-bag-no-lum',
+      'dli-green-bk-no-lum'
     ],
-    'maxLabDist': 10,
-    'blurDistance': 21,
+    'maxLabDist': 5,
+    'blurDistance': 27,
     'blurIntensity': 10,
-    'minArea': 120,
+    'minArea': 150,
     'minMovPc': 0.02
   },
   '2' : {
@@ -80,19 +85,21 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
   while True:
     frame = kinect.getVideo()
     in_range_depth = kinect.getInRangeDepthMap(lowerDepth, upperDepth)
+    blurred = im.getBlurred(frame, 
+      blurDistance=params['blurDistance'],
+      blurIntensity=params['blurIntensity'])
+    lab = im.getLabFromBGR(blurred)
 
     for key, colState in colorsState.iteritems():
       colorDetected = False
       movedEnough = False
 
-      onlyColorInRange, blurred, distance, colorThresh = im.getColorInRange(
-        frame=frame,
+      onlyColorInRange, distance, colorThresh = im.getColorInRange(
+        labframe=lab,
         in_range_depth=in_range_depth,
         colorMatrix=colState['labMatrix'],
         multiplicator=multiplicator,
-        maxLabDist=params['maxLabDist'],
-        blurDistance=params['blurDistance'],
-        blurIntensity=params['blurIntensity']
+        maxLabDist=params['maxLabDist']
       )
 
       contours = im.getContours(onlyColorInRange)
@@ -127,7 +134,7 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
           c = c.astype("int")
           text = "c: {} sz: {} Pos: {}, {}  Pc: {}, {}".format(key, label, cX, cY, pcX, pcY)
           # imageCopy = image.copy()
-          frameCopy = frame
+          frameCopy = blurred
           cv2.drawContours(frameCopy, [c], -1, (0, 255, 0), 2)
           if text != "none":
             cv2.putText(frameCopy, text, (cX, cY),
@@ -142,6 +149,7 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
       emitEvent(colState, colorDetected, movedEnough)
 
     cv2.imshow('RGB image',frame)
+    cv2.imshow('Blurred', blurred)
 
     k = cv2.waitKey(5) & 0xFF
     if k == 27:

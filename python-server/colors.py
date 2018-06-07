@@ -32,6 +32,36 @@ colorsInstruments = {
     'l': 0,
     'a': 23.27,
     'b': 0.71
+  },
+  'dorange-red-paper-no-lum': {
+    'eventName': 'brown',
+    'l': 0,
+    'a': 29.1,
+    'b': 14.03
+  },
+  'dorange-bag-no-lum': {
+    'eventName' : 'violet',
+    'l': 0,
+    'a': 30.48,
+    'b': 23.4
+  },
+  'dyellow-bag-no-lum' :{
+    'eventName': 'gold',
+    'l': 0,
+    'a': 15.62,
+    'b': 31.81
+  },
+  'dli-green-bk-no-lum': {
+    'eventName': 'green',
+    'l': 0,
+    'a': -6.83,
+    'b': 22.57
+  },
+  'dblue-no-lum': {
+    'eventName': 'noise',
+    'l':0,
+    'a':1.93,
+    'b':-3.64
   }
 }
 

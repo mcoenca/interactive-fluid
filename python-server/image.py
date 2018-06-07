@@ -12,14 +12,15 @@ def getContours(thresh):
 def getMatrixFromVec(vec, rowsNumber, colNumber):
   return np.tile(vec, (rowsNumber*colNumber, 1)).reshape((rowsNumber,colNumber, 3))
 
-def getColorInRange(frame, in_range_depth, colorMatrix, multiplicator=[], maxLabDist=20, blurDistance=27, blurIntensity=10):
+def getBlurred(frame, blurDistance=27, blurIntensity=10):
+  return cv2.GaussianBlur(frame, (blurDistance, blurDistance), blurIntensity)
 
-    blurred = cv2.GaussianBlur(frame, (blurDistance, blurDistance), blurIntensity)
+def getLabFromBGR(frame):
+  return cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
-    lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
-
+def getColorInRange(labframe, in_range_depth, colorMatrix, multiplicator=[], maxLabDist=20):
     if (np.any(multiplicator != False)):
-      lab = cv2.multiply(lab, multiplicator)
+      lab = cv2.multiply(labframe, multiplicator)
 
     absdiff = np.array(cv2.absdiff(lab, colorMatrix), dtype='float')
     
@@ -33,7 +34,7 @@ def getColorInRange(frame, in_range_depth, colorMatrix, multiplicator=[], maxLab
 
     onlyColorInRange = cv2.multiply(colorThresh, in_range_depth)
 
-    return onlyColorInRange, blurred, distance, colorThresh
+    return onlyColorInRange, distance, colorThresh
 
 def oldstuff():
   #   # luminosity filter gets gray
