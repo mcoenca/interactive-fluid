@@ -12,12 +12,17 @@ import * as SHADERS                     from './Shaders';
 
 let config = {
     TEXTURE_DOWNSAMPLE: 1,
-    DENSITY_DISSIPATION: 0.98,
-    VELOCITY_DISSIPATION: 0.99,
-    PRESSURE_DISSIPATION: 0.8,
-    PRESSURE_ITERATIONS: 25,
-    CURL: 30,
-    SPLAT_RADIUS: 0.005
+    DENSITY_DISSIPATION: 0.9995,
+    VELOCITY_DISSIPATION: 0.989,
+    PRESSURE_DISSIPATION: 0.7,
+    PRESSURE_ITERATIONS: 100,
+    CURL: 45,
+    // SPLAT_RADIUS: 0.005
+    SPLAT_RADIUS: 0.003,
+    MOVE_ITERATIONS : 10,
+    CLICK_ITERATIONS : 5,
+    MAX_TIME_DOWN: 5,
+    START_ITERATIONS: 2
 }
 
 let gl = null;
@@ -268,27 +273,52 @@ export default class NewFluid extends BaseFluid
         let cPointer = _GetCreatePointers(iUUID);
         let rgb = hexToRGB(color);
         let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
-        cPointer.down = true;
-        cPointer.moved = cPointer.down;
-        cPointer.dx = 10.0;
-        cPointer.dy = 10.0;
-        cPointer.y  = y;
-        cPointer.x  = x;
-        cPointer.color = colorRGB;
+
+        for (let i = 0; i < config.CLICK_ITERATIONS; i++) {
+          setTimeout(() =>{
+            cPointer.color = colorRGB;
+            
+
+
+            cPointer.timeDown = cPointer.timeDown + 1;
+            if (cPointer.timeDown > config.MAX_TIME_DOWN) {
+              cPointer.down = false;
+              cPointer.timeDown = 0;
+            } else {
+              cPointer.down = true;
+            }
+            
+            cPointer.moved = true;
+            cPointer.dx = (-1.1)^(i - 1) * (30.0 / config.CLICK_ITERATIONS);
+            cPointer.dy = (-1.1)^(i) * 30.0 / config.CLICK_ITERATIONS;
+            cPointer.y  = y;
+            cPointer.x  = x;
+          }, i*50)
+        }
+
+        
+        console.log('click');
     }
 
     _onEventStart(x, y, color, iUUID )
     {
+
         let cPointer = _GetCreatePointers(iUUID);
         let rgb = hexToRGB(color);
         let colorRGB = [rgb.red/255, rgb.green/255, rgb.blue/255];
-        cPointer.down = true;
-        cPointer.moved = cPointer.down;
-        cPointer.dx = 10.0;
-        cPointer.dy = 10.0;
-        cPointer.y  = y;
-        cPointer.x  = x;
-        cPointer.color = colorRGB;
+        for (let i = 0; i < config.START_ITERATIONS; i++) {
+          setTimeout(() =>{
+            cPointer.color = colorRGB;
+            cPointer.down = true;
+            cPointer.moved = true;
+            cPointer.dx = (-1.1)^(i - 1) * (10.0 / config.START_ITERATIONS);
+            cPointer.dy = (-1.1)^(i) * 10.0 / config.START_ITERATIONS;
+            cPointer.y  = y;
+            cPointer.x  = x;
+          }, i*50)
+        }
+
+        console.log('start');
     }
 
 
@@ -299,14 +329,22 @@ export default class NewFluid extends BaseFluid
         {
             return;
         }
-        cPointer.moved = true;
-        cPointer.dx = (x - cPointer.x) * 10.0;
-        cPointer.dy = (y - cPointer.y) * 10.0;
-        cPointer.x = x;
-        cPointer.y = y;        console.log( pointers.length );
 
+        for (let i = 0; i < config.MOVE_ITERATIONS; i++) {
+          setTimeout(() =>{
+            cPointer.timeDown = cPointer.timeDown + 1;
+            if (cPointer.timeDown > config.MAX_TIME_DOWN) {
+              cPointer.down = false;
+              cPointer.timeDown = 0;
+            }
 
-
+            cPointer.moved = true;
+            cPointer.dx = (x - cPointer.x) * 2.0 / config.MOVE_ITERATIONS;
+            cPointer.dy = (y - cPointer.y) * 2.0 / config.MOVE_ITERATIONS;
+            cPointer.x = cPointer.x + (i + 1) * (x - cPointer.x) / config.MOVE_ITERATIONS;
+            cPointer.y = cPointer.y + (i +1) * (y - cPointer.y) / config.MOVE_ITERATIONS;        console.log( pointers.length );
+          }, i*50)
+        }
     }
 
     _onEventEnd( x, y, color, iUUID )
@@ -424,6 +462,7 @@ function pointerPrototype () {
     this.down = false;
     this.moved = false;
     this.color = [30, 0, 300];
+    this.timeDown = 0;
 }
 
 pointers.push(new pointerPrototype());
