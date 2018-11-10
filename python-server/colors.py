@@ -34,7 +34,7 @@ colorsInstruments = {
     'b': 0.71
   },
   'dorange-red-paper-no-lum': {
-    'eventName': 'brown',
+    'eventName': 'pink',
     'l': 0,
     'a': 29.1,
     'b': 14.03
@@ -46,7 +46,7 @@ colorsInstruments = {
     'b': 23.4
   },
   'dyellow-bag-no-lum' :{
-    'eventName': 'gold',
+    'eventName': 'sky',
     'l': 0,
     'a': 15.62,
     'b': 31.81
