@@ -16,3 +16,71 @@
     </p>
   </div>
 </template>
+
+
+<template name="Octogon_page">
+
+  {{> octogon}}
+</template>
+
+
+<template name="octogon">
+  <div id="octogon-page" style="width:100%; height: 100%; background-color: {{backgroundColor}}">
+     <h1> Octogon </h1>
+
+     <div class="wrapper"> 
+       <div class="col">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col-even">
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col-even">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col-even">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col-even">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col-even">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+       <div class="col">
+         <!--Octogone de triangle-->
+         {{> triangle}}
+         {{> triangle}}
+       </div>
+     </div>
+  </div>
+</template>
+
+<template name="triangle">
+  <div class="triangle-wrap">
+     <div class="triangle {{triangleAnimateClass}}"></div>
+     <div class="triangle {{triangleAnimateClass}}"></div>
+  </div>
+</template>
+

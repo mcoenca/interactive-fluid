@@ -7,7 +7,7 @@ const STREAM_ABLY   = 1;
 const STREAM_METOER = 2;
 const STREAM_SOCKET_IO =3;
 
-let g_streamSystem = STREAM_SOCKET_IO;
+let g_streamSystem = STREAM_METOER;
 
 
 class StreamChannel
@@ -105,7 +105,10 @@ class SocketIoStreamChannel extends StreamChannel
         this.channelName = iChannelName;
 
         this.port = 8080;
+        // Connect client socket to meteor socket server
         // this.clientPort = 8080;
+        
+        // Connect client to external socketIo Server
         this.clientPort = 8000;
 
         console.log( "streaming using socket io");

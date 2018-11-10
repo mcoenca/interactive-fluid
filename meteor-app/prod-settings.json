@@ -1,0 +1,7 @@
+{
+  "galaxy.meteor.com": {
+     "env": {
+       "MONGO_URL": "mongodb://fluid:alchimie@ds255768.mlab.com:55768/fluid-touch"
+     }
+   }
+}

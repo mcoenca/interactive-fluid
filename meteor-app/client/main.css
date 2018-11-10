@@ -78,3 +78,160 @@ canvas {
     height: 0px;
   }
 }
+
+/*Octogon css */
+*, *:before, *:after, ul, li, a, button, input, h1, h2, h3, h4, h5, h6, p, img, image, svg, path, g {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: transparent;
+  border: none;
+  text-decoration: none;
+  font-family: 'Roboto';
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  list-style: none;
+}
+
+#octogon-page, .wrapper, .col, .col-even {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#octogon-page {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  font-family: 'Roboto';
+  overflow: hidden;
+}
+
+.wrapper {
+  width: calc(100px * 24 * 3);
+  height: calc(95px * 5 * 3);
+  transform: scale(3) /* rotate(90deg) rotateX(90deg)*/;
+}
+
+.col {
+  height: 100%;
+  margin-left: -40px;
+  flex-direction: column;
+}
+.col:nth-child(even) .triangle-wrap:nth-child(odd) {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+.col:nth-child(odd) .triangle-wrap:nth-child(even) {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.col-even {
+  height: 100%;
+  margin-left: -40px;
+  flex-direction: column;
+}
+.col-even:nth-child(even) .triangle-wrap:nth-child(even) {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+.col-even:nth-child(odd) .triangle-wrap:nth-child(odd) {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.triangle-wrap {
+  width: 100px;
+  height: 85px;
+  position: relative;
+  margin: 5px 0;
+}
+.triangle-wrap .triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 50px 85px 50px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.triangle-wrap .triangle:nth-child(even) {
+  border-color: transparent transparent #ffffff transparent;
+}
+.triangle-wrap .triangle:nth-child(even).animate {
+  -webkit-animation: white 1s linear infinite;
+          animation: white 1s linear infinite;
+}
+.triangle-wrap .triangle:nth-child(odd) {
+  border-color: transparent transparent black transparent;
+  -webkit-transform: scale(0);
+          transform: scale(0);
+  z-index: 2;
+}
+
+.triangle-wrap .triangle:nth-child(odd).animate {
+  -webkit-animation: gray 1s linear infinite;
+          animation: gray 1s linear infinite;
+}
+
+@-webkit-keyframes gray {
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+
+@keyframes gray {
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+@-webkit-keyframes white {
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    z-index: 1;
+  }
+  50.000000001% {
+    z-index: 3;
+    -webkit-transform: scale(0);
+            transform: scale(0);
+  }
+  100% {
+    z-index: 3;
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+@keyframes white {
+  50% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    z-index: 1;
+  }
+  50.000000001% {
+    z-index: 3;
+    -webkit-transform: scale(0);
+            transform: scale(0);
+  }
+  100% {
+    z-index: 3;
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+

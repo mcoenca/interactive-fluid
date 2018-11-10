@@ -8,6 +8,6 @@ Template.Join_page.helpers({
   },
   path(colorInfo) {
     console.log(colorInfo);
-    return FlowRouter.path('Color', colorInfo)
+    return FlowRouter.path('Color', colorInfo);
   }
 });

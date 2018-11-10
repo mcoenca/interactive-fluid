@@ -286,8 +286,8 @@ const synths = {
       if (evt == 'startPlaying')
       {
         //console.log('click');
-        this.fxGainNode.gain.value = 0.7-y /2;
-        this.masterGainNode.gain.value = 0.2 + y /2
+        this.fxGainNode.gain.value = 0.4-y /2;
+        this.masterGainNode.gain.value = 0.1 + y /2
         const baseNote = Math.floor(x*(minorScale.length - 2));
         this.notes = [minorScale[baseNote], minorScale[baseNote + 1], minorScale[baseNote + 2]];
         
@@ -401,7 +401,7 @@ const synths = {
         "frequency":0.5
       });
 
-      const vol = new Tone.Volume(-36);
+      const vol = new Tone.Volume(-15);
 
       instance.enve = new Tone.AmplitudeEnvelope({
         "attack": 0.5,

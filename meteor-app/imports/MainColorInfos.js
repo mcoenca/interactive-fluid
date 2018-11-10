@@ -27,11 +27,11 @@ const palettes = [
     quantize: 8
   }, {
     color: 'yellow',
-    name: 'Open Hi-Hat [Sampler: just click]',
+    name: 'Synth FM',
     colorCode: 'yellow',
     id: 4,
-    voice: 'sampler',
-    sound: '004',
+    voice: 'synth',
+    sound: 'fm',
     quantize: 8
   }, {
     color: 'turquoise',

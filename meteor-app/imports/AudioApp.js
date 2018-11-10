@@ -46,9 +46,10 @@ export const createUser = function(userStruct) {
   };
 }
 
-export const initAudio = function (soundsRoot, initLoop = true, {
+export const initAudio = function (soundsRoot, initLoop = 1, {
   shouldEnableMidi = false,
-  onMidiNotePlayed = () =>{}
+  onMidiNotePlayed = () =>{},
+  msTempo = 1000,
 } = {}) {
   // create web audio api context
   audioCtx = Tone.context;
@@ -95,36 +96,44 @@ export const initAudio = function (soundsRoot, initLoop = true, {
 
 
 
-  const initKickLoop = () => {
+  const initKickLoop = (initLoopNumber) => {
     kickPlayer = createUser(
       {
         voice: 'sampler',
-        sound: '001',
+        sound: 'base_0' + initLoopNumber ,
         quantize: 1
       }
     );
+
+    if (initLoopNumber === 0 ) {
+      // kick loop
+      bassPlayer = createUser(
+        {
+          voice: 'synth',
+          sound: 'bass',
+          quantize: 1
+        }
+      );
+    }
     // kickPlayer.fxGainNode.value = 0.7;
-    kickPlayer.sampler.masterGainNode.gain.value = 0;
-    bassPlayer = createUser(
-      {
-        voice: 'synth',
-        sound: 'bass',
-        quantize: 1
-      }
-    );
+    kickPlayer.sampler.masterGainNode.gain.value = 0.5;
+
 
     setInterval(function(){
     kickPlayer.sampler.touchEvent('startPlaying', 0, 0.8);
-    if (beatCount % 16 == 0) {
-      bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);
-    } else if (beatCount % 16 == 8){
-      bassPlayer.sampler.touchEvent('startPlaying', 0.7, 0.8);}
+
+    if (initLoopNumber === 0 ) {
+      if (beatCount % 16 == 0) {
+        bassPlayer.sampler.touchEvent('startPlaying', 0.99, 0.8);
+      } else if (beatCount % 16 == 8){
+        bassPlayer.sampler.touchEvent('startPlaying', 0.7, 0.8);}
+    }
     beatCount = (beatCount+1) % 16;
-    }, 1000);
+    }, msTempo);
   };
 
   if (initLoop) {
-    initKickLoop();
+    initKickLoop(initLoop);
   }
   if (shouldEnableMidi) {
     enableMidi(() => {
