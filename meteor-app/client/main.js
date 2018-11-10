@@ -251,6 +251,8 @@ Template.triangle.events({
     inst.resetTimeOut();
 
     inst.animateTriangle.set(true);
+
+    // to trigger use $(document.elementFromPoint(1008, 660)).click();
   }
 });
 
