@@ -166,7 +166,29 @@ Template.octogon.onCreated(function octogonOnCreated() {
     x = xPc * width;
     y = yPc * height;
 
+    const $el = $(document.elementFromPoint(x, y));
+
     // this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid, fluidControl, voice );
+    if ( goodEventType === "startPlaying" )
+    {
+      $el.click();
+      // this._onEventStart( x, y, color, iUUID, fluidControl, voice );
+    }
+    else if ( eventType === "stillPlaying" )
+    {
+      // this._onEventMove( x, y, color, iUUID, fluidControl, voice );
+      $el.click();
+    }
+    else if ( eventType === "stopPlaying" )
+    {
+      // this._onEventEnd( x, y, color, iUUID, fluidControl,voice );
+    }
+    else if ( eventType === "tap" )
+    {
+      $el.click();
+    }
+
+    $(document.elementFromPoint(x, y)).click();
   }
 
   const handleStreamEvent = (streamEvent) => {
