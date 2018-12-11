@@ -23,8 +23,8 @@ import { initAudio, createUser } from '/imports/AudioApp.js';
 import { initUsbKeyStationMidi } from '/imports/MidiApp.js';
 
 // change simulation ORIGINAL_APP / NEW_APP
-// let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
-let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.NEW_APP;
+let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.ORIGINAL_APP;
+// let CURRENT_FLUID_APP = FluidApp.FLUID_SIMULATION_APPS_KEY.NEW_APP;
 
 // switch back to old audio system (colorInfos)
 const USE_STREAM_COLOR = true;
@@ -145,6 +145,30 @@ Template.octogon.onCreated(function octogonOnCreated() {
 
   this.backgroundColor = new ReactiveVar('black');
 
+  this.$elSelected = null
+  this.clickTimer = null
+
+  const reclickBeforeFadeDelay = 800
+
+  const self = this;
+
+
+  this.startClickTimer = () => {
+    self.clickTimer = setInterval(() => {
+      if (self.$elSelected === null) {
+        clearInterval(self.clickTimer)
+        return;
+      }
+      console.log('reclicking automatically')
+      self.$elSelected.click()
+    }, reclickBeforeFadeDelay) 
+  }
+
+  this.stopClickTimer = () => {
+    // self.clickTimer = null;
+    clearInterval(self.clickTimer)
+  }
+
   const drawStream = (streamEvent) => {
     const {
       uuid, 
@@ -163,32 +187,51 @@ Template.octogon.onCreated(function octogonOnCreated() {
 
     const fluidControl = fluidParams;
 
-    x = xPc * width;
-    y = yPc * height;
+    const xRatio = 0.5;
 
+    let x = xPc * width;
+    let y = yPc * height;
+
+    // x symetry with 1175 px of page lenght
+    // let pageWidth =  1175;
+    // pageWidth = 1874;
+    x = width / 2 + ( width / 2 - x) * xRatio
+
+    console.log('event');
+    console.log(width, height);
+    console.log(xPc, yPc);
+    console.log(x, y);
     const $el = $(document.elementFromPoint(x, y));
 
-    // this.fluidApp.handleEvents( x, y, colorCode, goodEventType, uuid, fluidControl, voice );
+    if (!$el) {
+      return
+    }
+
     if ( goodEventType === "startPlaying" )
     {
-      $el.click();
+      // $el.click();
+      this.$elSelected = $el;
+      this.startClickTimer();
       // this._onEventStart( x, y, color, iUUID, fluidControl, voice );
     }
     else if ( eventType === "stillPlaying" )
     {
       // this._onEventMove( x, y, color, iUUID, fluidControl, voice );
-      $el.click();
+      // $el.click();
+      this.$elSelected = $el;
     }
     else if ( eventType === "stopPlaying" )
     {
       // this._onEventEnd( x, y, color, iUUID, fluidControl,voice );
+      this.stopClickTimer();
+      this.$elSelected = null;
     }
     else if ( eventType === "tap" )
     {
-      $el.click();
+      // $el.click();
     }
 
-    $(document.elementFromPoint(x, y)).click();
+    // $(document.elementFromPoint(x, y)).click();
   }
 
   const handleStreamEvent = (streamEvent) => {
@@ -230,7 +273,7 @@ Template.octogon.onRendered(function fluidOnRendered() {
     const totalNotes = 120;
     const hexColor = perc2color(100 * number / totalNotes);
     const {red, green, blue} = hexToRGB(hexColor);
-    this.fluidApp.setBackgroundColor(red/255, green/255, blue/255);
+    // this.fluidApp.setBackgroundColor(red/255, green/255, blue/255);
     this.backgroundColor.set(hexColor);
   };
 
@@ -258,22 +301,28 @@ Template.triangle.onCreated(function() {
   this.timeout = null;
 
   this.resetTimeOut = () =>{
-    if (this.timeout === null) {
+    // if (this.timeout === null) {
+      clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
-        this.timeout = null;
+        clearTimeout(this.timeout);
+        // this.timeout = null;
+        console.log('end animate');
         this.animateTriangle.set(false);
       }, fadeDelay);
-    }
+    // } else {
+
+    // }
   }
 });
 
 Template.triangle.events({
   'click'() {
     const inst = Template.instance();
+
+    console.log('click detected');
     inst.resetTimeOut();
 
     inst.animateTriangle.set(true);
-
     // to trigger use $(document.elementFromPoint(1008, 660)).click();
   }
 });
@@ -281,6 +330,7 @@ Template.triangle.events({
 Template.triangle.helpers({
   triangleAnimateClass(){
     const res = Template.instance().animateTriangle.get() ? 'animate': '';
+    console.log(res);
     return res; 
   }
 });

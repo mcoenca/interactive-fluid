@@ -12,6 +12,8 @@ import utils
 
 from collections import OrderedDict
 
+Debug = False
+
 configs = {
   '1': {
     # 2m10 a 3m10
@@ -43,10 +45,25 @@ configs = {
     'activeColors': [
       'green-no-lum'
     ]
+  },
+  'noColor' :{
+    'lowerDepth': 780,
+    'upperDepth' : 860,
+    'offset': 1,
+    'multiplicatorVec': [0, 1, 1],
+    'activeColors': [
+      'grey-orange-lum',
+    ],
+    'maxLabDist': 150,
+    'blurDistance': 27,
+    'blurIntensity': 10,
+    'minArea': 100,
+    'minMovPc': 0.01
   }
 }
 
 def emitEvent(colState, colorDetected, movedEnough):
+  global Debug
   if colorDetected:
     if colState['lastPlayed'] and movedEnough:
       sio.emit({
@@ -77,19 +94,24 @@ def emitEvent(colState, colorDetected, movedEnough):
       colState['lastPlayed'] = False
 
 def emitOnColorsDetection(colorsState, multiplicator, params):
-
+  global Debug
   lowerDepth=params['lowerDepth']
   upperDepth=params['upperDepth']
   offset=params['offset']
 
   while True:
+    if Debug:
+      print "kinect"
     frame = kinect.getVideo()
+    if Debug:
+      print "kinect 1"
     in_range_depth = kinect.getInRangeDepthMap(lowerDepth, upperDepth)
     blurred = im.getBlurred(frame, 
       blurDistance=params['blurDistance'],
       blurIntensity=params['blurIntensity'])
     lab = im.getLabFromBGR(blurred)
 
+    # print "kinect 2"
     for key, colState in colorsState.iteritems():
       colorDetected = False
       movedEnough = False
@@ -104,7 +126,11 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
 
       contours = im.getContours(onlyColorInRange)
 
+      if Debug:
+        print "kinect 3"
       for c in contours:
+        if Debug:
+          print "kinect 4"
         M = cv2.moments(c)
         areaSize = cv2.contourArea(c)
 
@@ -139,19 +165,25 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
           if text != "none":
             cv2.putText(frameCopy, text, (cX, cY),
               cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 2)
+      if Debug:
+        print "kinect 5"
 
-      # cv2.imshow('In Range Frame', in_range_depth)
+      cv2.imshow('In Range Frame', in_range_depth)
     
       # cv2.imshow('Blur', blurred)
       # cv2.imshow('Distance ', distance)
       # cv2.imshow('Color Thresh', colorThresh)
-      # cv2.imshow('Both Thresh', onlyColorInRange)
+      cv2.imshow('Both Thresh', onlyColorInRange)
       emitEvent(colState, colorDetected, movedEnough)
 
+    if Debug:
+      print "kinect 6"
     cv2.imshow('RGB image',frame)
     cv2.imshow('Blurred', blurred)
 
     k = cv2.waitKey(5) & 0xFF
+    if Debug:
+      "kinect end"
     if k == 27:
       break
     elif k == ord('a'):
@@ -165,7 +197,7 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
 
 
 if __name__ == '__main__': 
-  global configs
+  global configs, Debug
   # construct the argument parse and parse the arguments
   ap = argparse.ArgumentParser()
 
@@ -175,11 +207,20 @@ if __name__ == '__main__':
 
   args = vars(ap.parse_args())
 
+  if Debug:
+    print "test"
+
   if args['config'][0]:
+    if Debug:
+      print "test 2"
     config = args['config'][0][0]
 
     # should see a red thing
     sio.emit({u'color': u'red', u'eventType': u'startPlaying', u'xPc': 0.7375565610859729, u'uuid': u'76233600-65c2-11e8-bb94-9f72e9fbefb8', u'yPc': 0.6273115220483642})
+    # If not printed you need to check rabbitmq server
+    # Brew services
+    if Debug:
+      print "test 4"
 
     params = configs[config]
 
@@ -191,4 +232,6 @@ if __name__ == '__main__':
       np.asarray(params['multiplicatorVec'], np.uint8), 
       kinect.hauteur, kinect.largeur)
 
+    if Debug:
+      print "test 3"
     emitOnColorsDetection(colorsState, multiplicator, params=params)     

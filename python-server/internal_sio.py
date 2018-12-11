@@ -3,7 +3,10 @@ import socketio
 import eventlet
 eventlet.monkey_patch()
 
-internal_sio = socketio.KombuManager('amqp://mcoenca:cristohoger24@localhost:5672/pythonsocket', write_only=True)
+uri = 'amqp://mcoenca:cristohoger24@localhost:5672/pythonsocket'
+# uri = 'amqp://guest:guest@localhost:5672/'
+internal_sio = socketio.KombuManager(uri, write_only=True)
+
 
 channelName = "streamEvents";
 

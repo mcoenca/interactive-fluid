@@ -102,8 +102,8 @@ canvas {
 }
 
 #octogon-page {
-  width: 100%;
-  height: 100%;
+  width: 4000px;
+  height: 3000px;
   margin: 0;
   padding: 0;
   background-color: black;
@@ -111,10 +111,22 @@ canvas {
   overflow: hidden;
 }
 
+#logo-wrapper {
+  position: absolute;
+  width: 300px;
+  top: 850px;
+  left: 900px;
+}
+
+#logo-wrapper img {
+  width: 100%;
+  height: 100%;
+}
+
 .wrapper {
   width: calc(100px * 24 * 3);
   height: calc(95px * 5 * 3);
-  transform: scale(3) /* rotate(90deg) rotateX(90deg)*/;
+  transform: scale(3.10) rotate(1.3deg) /* rotate(90deg) rotateX(90deg)*/;
 }
 
 .col {
@@ -162,6 +174,8 @@ canvas {
 }
 .triangle-wrap .triangle:nth-child(even) {
   border-color: transparent transparent #ffffff transparent;
+  -webkit-animation: rainbow 8s linear infinite;
+          animation: rainbow 8s linear infinite;
 }
 .triangle-wrap .triangle:nth-child(even).animate {
   -webkit-animation: white 1s linear infinite;
@@ -217,6 +231,7 @@ canvas {
             transform: scale(1);
   }
 }
+
 @keyframes white {
   50% {
     -webkit-transform: scale(1);
@@ -234,4 +249,80 @@ canvas {
             transform: scale(1);
   }
 }
+@-webkit-keyframes rainbow{
+  100%,0%{
+    border-color: transparent transparent rgb(255,0,0) transparent;
+  }
+  8%{
+    border-color: transparent transparent rgb(255,127,0) transparent;
+  }
+  16%{
+    border-color: transparent transparent rgb(255,255,0) transparent;
+  }
+  25%{
+    border-color: transparent transparent rgb(127,255,0) transparent;
+  }
+  33%{
+    border-color: transparent transparent rgb(0,255,0) transparent;
+  }
+  41%{
+    border-color: transparent transparent rgb(0,255,127) transparent;
+  }
+  50%{
+    border-color: transparent transparent rgb(0,255,255) transparent;
+  }
+  58%{
+    border-color: transparent transparent rgb(0,127,255) transparent;
+  }
+  66%{
+    border-color: transparent transparent rgb(0,0,255) transparent;
+  }
+  75%{
+    border-color: transparent transparent rgb(127,0,255) transparent;
+  }
+  83%{
+    border-color: transparent transparent rgb(255,0,255) transparent;
+  }
+  91%{
+    border-color: transparent transparent rgb(255,0,127) transparent;
+  }
+}
 
+@keyframes rainbow{
+  100%,0%{
+    border-color: transparent transparent rgb(255,0,0) transparent;
+  }
+  8%{
+    border-color: transparent transparent rgb(255,127,0) transparent;
+  }
+  16%{
+    border-color: transparent transparent rgb(255,255,0) transparent;
+  }
+  25%{
+    border-color: transparent transparent rgb(127,255,0) transparent;
+  }
+  33%{
+    border-color: transparent transparent rgb(0,255,0) transparent;
+  }
+  41%{
+    border-color: transparent transparent rgb(0,255,127) transparent;
+  }
+  50%{
+    border-color: transparent transparent rgb(0,255,255) transparent;
+  }
+  58%{
+    border-color: transparent transparent rgb(0,127,255) transparent;
+  }
+  66%{
+    border-color: transparent transparent rgb(0,0,255) transparent;
+  }
+  75%{
+    border-color: transparent transparent rgb(127,0,255) transparent;
+  }
+  83%{
+    border-color: transparent transparent rgb(255,0,255) transparent;
+  }
+  91%{
+    border-color: transparent transparent rgb(255,0,127) transparent;
+  }
+}

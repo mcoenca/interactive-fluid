@@ -2,6 +2,12 @@ import utils
 import numpy as np
 
 colorsInstruments = {
+  'grey-orange-lum': {
+    'eventName': 'sky',
+    'l': 20,
+    'a' : 5,
+    'b': 10
+  },
   'green': 
   {
     'eventName': 'red',

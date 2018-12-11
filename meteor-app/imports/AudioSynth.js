@@ -191,7 +191,7 @@ const synths = {
           "frequency":0.5});
         
 
-        vol=new Tone.Volume(-34).chain(chorus,instance.filter,instance.tremolo,instance.pitchEffect);
+        vol=new Tone.Volume(-29).chain(chorus,instance.filter,instance.tremolo,instance.pitchEffect);
 
 
      
