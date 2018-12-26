@@ -59,7 +59,7 @@ configs = {
     'blurDistance': 27,
     'blurIntensity': 10,
     'minArea': 100,
-    'minMovPc': 0.003
+    'minMovPc': 0.005
   }
 }
 

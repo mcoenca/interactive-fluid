@@ -172,6 +172,18 @@ Template.octogon.onCreated(function octogonOnCreated() {
     clearInterval(self.clickTimer)
   }
 
+  const newCircle = (x, y) => {
+    const circleDiv = $('<div class="good-circle">')
+      .css({
+      "left": x - 5 + 'px',
+      "top": y - 5 + 'px',
+      "background-color": 'red',
+    })
+    .appendTo(document.getElementById('octogon-page'));
+
+    setTimeout(() => circleDiv.remove(), 500);
+  };
+
   const drawStream = (streamEvent) => {
     const {
       uuid, 
@@ -200,11 +212,22 @@ Template.octogon.onCreated(function octogonOnCreated() {
     // pageWidth = 1874;
     x = width / 2 + ( width / 2 - x) * xRatio
 
-    console.log('event');
-    console.log(width, height);
-    console.log(xPc, yPc);
-    console.log(x, y);
+
+    
     const $el = $(document.elementFromPoint(x, y));
+
+    if (DEBUG) {
+      console.log('event');
+      console.log(width, height);
+      console.log(xPc, yPc);
+      console.log(x, y);
+
+      const windowTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const windowLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+
+      newCircle(windowLeft + x,windowTop+ y);
+    }
+
 
     if (!$el) {
       return
