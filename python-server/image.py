@@ -18,6 +18,7 @@ def getBlurred(frame, blurDistance=27, blurIntensity=10):
 def getLabFromBGR(frame):
   return cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
 
+# @profile
 def getColorInRange(labframe, in_range_depth, colorMatrix, multiplicator=[], maxLabDist=20):
     if (np.any(multiplicator != False)):
       lab = cv2.multiply(labframe, multiplicator)
@@ -28,6 +29,7 @@ def getColorInRange(labframe, in_range_depth, colorMatrix, multiplicator=[], max
 
     summed = np.add.reduce(power, 2)
 
+    # !! These np.array conversions are weird
     distance = np.array(cv2.sqrt(summed), dtype='uint8')
     
     colorThresh = cv2.threshold(distance, maxLabDist, 255, cv2.THRESH_BINARY_INV)[1]

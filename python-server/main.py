@@ -13,6 +13,7 @@ import utils
 from collections import OrderedDict
 
 Debug = False
+Show = False
 
 configs = {
   '1': {
@@ -58,12 +59,12 @@ configs = {
     'blurDistance': 27,
     'blurIntensity': 10,
     'minArea': 100,
-    'minMovPc': 0.01
+    'minMovPc': 0.003
   }
 }
 
 def emitEvent(colState, colorDetected, movedEnough):
-  global Debug
+  global Debug, Show
   if colorDetected:
     if colState['lastPlayed'] and movedEnough:
       sio.emit({
@@ -94,7 +95,7 @@ def emitEvent(colState, colorDetected, movedEnough):
       colState['lastPlayed'] = False
 
 def emitOnColorsDetection(colorsState, multiplicator, params):
-  global Debug
+  global Debug, Show
   lowerDepth=params['lowerDepth']
   upperDepth=params['upperDepth']
   offset=params['offset']
@@ -168,33 +169,39 @@ def emitOnColorsDetection(colorsState, multiplicator, params):
       if Debug:
         print "kinect 5"
 
-      cv2.imshow('In Range Frame', in_range_depth)
+      if Show:
+        cv2.imshow('In Range Frame', in_range_depth)
     
       # cv2.imshow('Blur', blurred)
       # cv2.imshow('Distance ', distance)
       # cv2.imshow('Color Thresh', colorThresh)
-      cv2.imshow('Both Thresh', onlyColorInRange)
+      if Show: 
+        cv2.imshow('Both Thresh', onlyColorInRange)
       emitEvent(colState, colorDetected, movedEnough)
 
     if Debug:
       print "kinect 6"
-    cv2.imshow('RGB image',frame)
-    cv2.imshow('Blurred', blurred)
 
-    k = cv2.waitKey(5) & 0xFF
+    if Show:
+      cv2.imshow('RGB image',frame)
+      cv2.imshow('Blurred', blurred)
+      # cv2 not a good visualisation backend : blocking !
+      k = cv2.waitKey(1) & 0xFF
+      
+      if k == 27:
+        break
+
+      elif k == ord('a'):
+        lowerDepth = lowerDepth + offset
+        upperDepth = upperDepth + offset
+        print lowerDepth, upperDepth
+      elif k == ord('b'):
+        lowerDepth = lowerDepth - offset
+        upperDepth = upperDepth - offset
+        print lowerDepth, upperDepth
+
     if Debug:
       "kinect end"
-    if k == 27:
-      break
-    elif k == ord('a'):
-      lowerDepth = lowerDepth + offset
-      upperDepth = upperDepth + offset
-      print lowerDepth, upperDepth
-    elif k == ord('b'):
-      lowerDepth = lowerDepth - offset
-      upperDepth = upperDepth - offset
-      print lowerDepth, upperDepth
-
 
 if __name__ == '__main__': 
   global configs, Debug
