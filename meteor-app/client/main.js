@@ -37,6 +37,8 @@ const DEBUG = true;
 
 const ENABLE_OLD_MIDI_FILE = false;
 
+const OCTO_ENABLE_SELECTION = false;
+
 // === FLUID PAGE
 const loadUser = (userColor) => (_.extend({
   color: userColor.color
@@ -145,6 +147,7 @@ Template.octogon.onCreated(function octogonOnCreated() {
 
   this.backgroundColor = new ReactiveVar('black');
 
+  this.$previousElSelected = null
   this.$elSelected = null
   this.clickTimer = null
 
@@ -209,8 +212,11 @@ Template.octogon.onCreated(function octogonOnCreated() {
 
     if ( goodEventType === "startPlaying" )
     {
-      // $el.click();
+      $el.click();
+
       this.$elSelected = $el;
+      this.$previousElSelected = $el;
+
       this.startClickTimer();
       // this._onEventStart( x, y, color, iUUID, fluidControl, voice );
     }
@@ -219,12 +225,19 @@ Template.octogon.onCreated(function octogonOnCreated() {
       // this._onEventMove( x, y, color, iUUID, fluidControl, voice );
       // $el.click();
       this.$elSelected = $el;
+
+      if (!this.$elSelected.is(this.$previousElSelected)) {
+        this.$elSelected.click();
+        this.$previousElSelected = $el;
+      }
+      
     }
     else if ( eventType === "stopPlaying" )
     {
       // this._onEventEnd( x, y, color, iUUID, fluidControl,voice );
       this.stopClickTimer();
       this.$elSelected = null;
+      this.$previousElSelected = null;
     }
     else if ( eventType === "tap" )
     {
@@ -306,7 +319,7 @@ Template.triangle.onCreated(function() {
       this.timeout = setTimeout(() => {
         clearTimeout(this.timeout);
         // this.timeout = null;
-        console.log('end animate');
+        if (DEBUG) console.log('end animate');
         this.animateTriangle.set(false);
       }, fadeDelay);
     // } else {
@@ -319,7 +332,7 @@ Template.triangle.events({
   'click'() {
     const inst = Template.instance();
 
-    console.log('click detected');
+    if (DEBUG) console.log('click detected in triangle');
     inst.resetTimeOut();
 
     inst.animateTriangle.set(true);
@@ -330,7 +343,7 @@ Template.triangle.events({
 Template.triangle.helpers({
   triangleAnimateClass(){
     const res = Template.instance().animateTriangle.get() ? 'animate': '';
-    console.log(res);
+    if (DEBUG) console.log(res);
     return res; 
   }
 });
