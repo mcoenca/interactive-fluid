@@ -9,7 +9,7 @@
     "ably": "^1.0.13",
     "bootstrap": "^3.3.7",
     "bufferutil": "^4.0.0",
-    "jquery": "^3.1.1",
+    "jquery": "^3.5.0",
     "jquery-touch-events": "^1.0.7",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
